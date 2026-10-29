@@ -12,11 +12,14 @@ facts:
   - No login
   - No GitHub writes
   - AI off in the MVP
-# Stack: confirm from the DocScout repo before adding.
-stack: []
+stack:
+  - TypeScript
+  - React
+  - Node.js
+  - Express.js
 links:
   live: https://docscoutserver-production.up.railway.app/
-  # github: link pending
+  github: https://github.com/SheikhAbdullahNasir/docscout
 visual:
   type: screenshots
   images:

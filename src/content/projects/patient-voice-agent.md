@@ -19,8 +19,10 @@ stack:
   - PostgreSQL (Supabase)
   - SQLAlchemy
   - Vapi
-# No live demo and no phone number on the site. GitHub link pending.
-links: {}
+# No live demo and no phone number on the site. The repo is private for now, so no
+# GitHub button; when it goes public, replace `githubPrivate: true` with `github: <url>`.
+links:
+  githubPrivate: true
 # Verify these steps against the repo before launch. Add a dashboard step only if Abdullah confirms it works.
 visual:
   type: diagram

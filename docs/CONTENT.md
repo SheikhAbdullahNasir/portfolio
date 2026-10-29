@@ -33,8 +33,8 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - Mobile summary: "README, contribution guide, and help-wanted issues from any public repo, in one place."
 - Why: "Built after dev events got me into open source, and I wanted an easier way to find a first task."
 - Facts: "No login", "No GitHub writes", "AI off in the MVP"
-- Stack: [Stack: confirm from repo]
-- Links: live site https://docscoutserver-production.up.railway.app/ ; GitHub [link pending]
+- Stack: TypeScript, React, Node.js, Express.js (confirmed by Abdullah 2026-10-29)
+- Links: live site https://docscoutserver-production.up.railway.app/ ; GitHub https://github.com/SheikhAbdullahNasir/docscout
 - Visual: two screenshots in `src/assets/projects/docscout/`: `docscout-home.png` (retaken 2026-10-29) and `docscout-issue.jpg`.
 - Honesty notes: lead with labeled issues; the documentation-findings section exists but rarely returns results, so do not claim it "finds documentation problems". The AI agent phase is planned, not built.
 
@@ -47,7 +47,7 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - Why: [Why I built it, in your words]
 - Facts: "47 tests passing", "Vapi voice pipeline", "FastAPI + Supabase"
 - Stack: Python, FastAPI, PostgreSQL (Supabase), SQLAlchemy, Vapi (confirmed by Abdullah 2026-10-29)
-- Links: GitHub [link pending]. No live demo and no phone number on the site.
+- Links: none for now. The repo is private, so the card shows no GitHub button and no placeholder (Abdullah 2026-10-29); add the link when it goes public. No live demo and no phone number on the site.
 - Visual: flow diagram (HTML/CSS boxes), verify against the repo before launch:
   1. Caller (phone call)
   2. Vapi · Maya (speech to text, LLM, text to speech)
@@ -115,21 +115,22 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - "© 2026 Abdullah Bin Nasir" (use the current year)
 - "Download resume PDF", "Back to top"
 
-## 404 page (draft by Claude, milestone 7; not approved yet)
+## 404 page (approved by Abdullah 2026-10-29)
 - Browser title: "Page not found"
 - Big number: "404"
 - Heading: "This page does not exist."
 - Text: "The link may be old or mistyped. Everything I have built so far is on the home page."
 - Buttons: "Back to home", "Get in touch"
 
-## Share image (draft by Claude, milestone 7; not approved yet)
+## Share image (approved by Abdullah 2026-10-29)
 - `public/og.png` reuses the hero copy: "Karachi, Pakistan", "Abdullah", "I build products with AI, end to end."
 - Alt text: "Abdullah, Karachi, Pakistan. I build products with AI, end to end."
 - Title and description for search and link previews: the site name and the site description above.
 
 ## Still missing (show as placeholders)
-- GitHub repository links for DocScout and Patient Voice Agent.
-- DocScout stack (verify from its repo).
-- Patient Voice Agent "why" line, headline confirmation, diagram check against its repo, dashboard status.
 - Résumé PDF.
+- Patient Voice Agent "why" line.
+
+## Open notes (not shown on the site)
+- Patient Voice Agent: headline confirmation, diagram check against its repo, dashboard status, GitHub link once the repo is public.
 - Which skills to list as proven (no skills section until decided).

@@ -70,7 +70,7 @@ const titleId = `project-${data.slug}`;
             <span class="visually-hidden">(opens in a new tab)</span>
           </a>
         ) : (
-          <Placeholder name="projectGithub" />
+          !data.links.githubPrivate && <Placeholder name="projectGithub" />
         )
       }
     </div>
@@ -210,6 +210,11 @@ const titleId = `project-${data.slug}`;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
+  }
+
+  /* No live site and a private repo: no row, so no extra gap. */
+  .card__links:empty {
+    display: none;
   }
 
   .card__button {

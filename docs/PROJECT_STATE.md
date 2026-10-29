@@ -247,17 +247,22 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 - Milestone 8.
 
 ## Placeholders to fill (from Abdullah)
-Rendered on the site where marked "visible". The rest are notes in the project files.
-- GitHub link for DocScout (visible: `links.github` in `docscout.md`).
-- GitHub link for Patient Voice Agent (visible: `links.github` in `patient-voice-agent.md`).
-- DocScout stack, verify from repo (visible: `stack` in `docscout.md`).
-- Patient Voice Agent "why" line (visible: `why` in `patient-voice-agent.md`).
+Only two placeholders are still visible on the site:
+- Résumé PDF (set `href` in `src/data/site.ts` once `public/Abdullah-Bin-Nasir-Resume.pdf` exists).
+- Patient Voice Agent "why" line (`why` in `patient-voice-agent.md`).
+
+Notes, not shown on the site:
+- Patient Voice Agent GitHub link: the repo is private for now, so the card has no GitHub button and no placeholder (`githubPrivate: true` in `patient-voice-agent.md`). When the repo goes public, replace that line with `github: <url>`; the button then appears on its own.
 - Patient Voice Agent headline confirmation (current text is Claude's draft; comment in the file).
 - Patient Voice Agent flow diagram check against the repo, and dashboard status (comment in the file).
-- Résumé PDF (visible: set `href` in `src/data/site.ts` once `public/Abdullah-Bin-Nasir-Resume.pdf` exists).
 - Skills to list, if any (no skills section until decided).
 - Beyond the code copy needs edits later (Abdullah to provide).
-- 404 page copy and share image alt text are Claude's drafts (CONTENT.md), waiting for approval.
+
+## Content update (Abdullah, 2026-10-29)
+- DocScout: GitHub link https://github.com/SheikhAbdullahNasir/docscout and stack TypeScript, React, Node.js, Express.js (in `docscout.md` and CONTENT.md). The card now shows Visit live site and GitHub side by side, and the stack line on desktop.
+- Patient Voice Agent: GitHub placeholder removed (private repo, see above). An empty links row is hidden so it leaves no gap.
+- 404 page copy and the share image alt text approved (CONTENT.md, DECISIONS #42).
+- Checked: `npx astro check` 0 errors, 0 warnings; build passes; the built page has only the résumé and "why" placeholders. In headless Chrome at 1440x900, 1280x680, 1024x768, 390x844, and 360x640: no overflow in either card, DocScout's two buttons on one 44px row, Patient Voice Agent's empty links row hidden, no horizontal scroll.
 
 ## Open design questions (do not block the build)
 - Final display font (Bricolage Grotesque is provisional).

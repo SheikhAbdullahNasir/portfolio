@@ -1,4 +1,4 @@
-// 404 page copy from docs/CONTENT.md (draft, waiting for Abdullah's review).
+// 404 page copy from docs/CONTENT.md (approved by Abdullah, 2026-10-29).
 
 export const notFound = {
   title: 'Page not found',

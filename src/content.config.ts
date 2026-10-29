@@ -30,6 +30,8 @@ const projects = defineCollection({
         .object({
           live: z.url().optional(),
           github: z.url().optional(),
+          /** The repo is private: no GitHub button and no placeholder. Drop it once `github` is set. */
+          githubPrivate: z.boolean().optional(),
         })
         .default({}),
       visual: z.discriminatedUnion('type', [

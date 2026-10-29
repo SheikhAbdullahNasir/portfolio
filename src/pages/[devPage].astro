@@ -55,7 +55,7 @@ const projects = await getProjects();
           <p>Stack: {p.data.stack.length > 0 ? p.data.stack.join(', ') : <Placeholder name="projectStack" />}</p>
           <p>
             Live: {p.data.links.live ? <a href={p.data.links.live}>{p.data.links.live}</a> : 'none'} · GitHub:{' '}
-            {p.data.links.github ? <a href={p.data.links.github}>{p.data.links.github}</a> : <Placeholder name="projectGithub" />}
+            {p.data.links.github ? <a href={p.data.links.github}>{p.data.links.github}</a> : p.data.links.githubPrivate ? 'private repo (no button)' : <Placeholder name="projectGithub" />}
           </p>
           {p.data.visual.type === 'screenshots' ? (
             <div class="shots">
