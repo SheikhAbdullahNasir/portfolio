@@ -101,8 +101,9 @@ a {
     translate: 0 var(--reveal-rise);
   }
 
-  /* Only the reveal animates; hiding is instant, so nothing visible fades out at load. */
-  .reveal [data-reveal].is-revealed {
+  /* Only the reveal animates; hiding is instant, so nothing visible fades out at load
+     (and resetting below the screen is never seen). */
+  .reveal [data-reveal].is-revealed:not(.reveal-instant) {
     transition:
       opacity var(--reveal-duration) ease,
       filter var(--reveal-duration) ease,

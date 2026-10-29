@@ -93,7 +93,7 @@ _Written 2026-10-29 from the design phase in Claude chat. Every visual value her
 ## 5. Interactions
 
 ### 5.1 Globe (hero 3D, placeholder object)
-- Canvas 2D, hand-written, no library: about 900 points on a Fibonacci sphere, Karachi pinned (24.86, 67.0) with a pulsing ring, arcs to a few cities (London, New York, Dubai, Berlin, Singapore, San Francisco, Toronto) with a moving dot on each arc. Gentle sway around Karachi; desktop tilts toward the cursor; mobile can be dragged horizontally.
+- Canvas 2D, hand-written, no library: about 900 points on a Fibonacci sphere, Karachi pinned (24.86, 67.0) with a pulsing ring, arcs to a few cities (London, New York, Dubai, Berlin, Singapore, San Francisco, Toronto) with a moving dot on each arc. Gentle sway around Karachi; desktop tilts toward the cursor; desktop and mobile can be dragged horizontally, with the front following the pointer (DECISIONS #31).
 - Reference implementation: `docs/reference/globe.js`.
 - Loads after the main content (Astro island with `client:visible` or an idle-loaded script). Pause the animation when off screen or when the tab is hidden. Reduced motion: draw one still frame.
 - Status: placeholder. Abdullah wants to research a more relevant 3D object later; that object may be heavier (Three.js or Spline). Keep the hero layout so the object can be swapped without touching the text.
@@ -104,7 +104,7 @@ _Written 2026-10-29 from the design phase in Claude chat. Every visual value her
 - Requirements: real text for screen readers (letters split visually only), off for touch screens or replaced by a gentle idle wave, off for reduced motion, filter only active while interacting, blur scales with font size.
 
 ### 5.3 Scroll reveals (optional, subtle)
-- Short fade or blur-to-sharp as text enters view. Once per element. Off for reduced motion.
+- Short fade or blur-to-sharp as text enters view. Replays each time an element enters from below while scrolling down, never while scrolling up (DECISIONS #30). Off for reduced motion.
 
 ## 6. Performance and quality budget
 - Lighthouse on mobile: Performance 95+, Accessibility 100, Best Practices 100, SEO 100 (aim; report actual numbers).

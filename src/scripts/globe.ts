@@ -5,10 +5,14 @@
 type Vec3 = [number, number, number];
 
 export interface GlobeOptions {
-  /** 'pointer' tilts toward the cursor (mouse); 'drag' turns with a horizontal drag (touch). */
-  interactive: 'pointer' | 'drag';
-  /** Where a drag may start. Drags only start inside the globe's circle, never on links or buttons. */
-  dragArea?: HTMLElement;
+  /** Tilt toward the cursor while idle (mouse devices). */
+  tilt: boolean;
+  /**
+   * Where a horizontal drag may start (any pointer). Drags only start inside the
+   * globe's circle, never on links or buttons. Gets `data-globe-cursor` ("grab" or
+   * "grabbing") for a mouse, so CSS can show the cursor.
+   */
+  dragArea: HTMLElement;
   /** Called after the first frame is drawn, so the canvas can fade in. */
   onReady?: () => void;
 }
@@ -29,6 +33,9 @@ const ARC_STEPS = 48;
 const HOME_YAW = (KARACHI[1] * Math.PI) / 180;
 // Tips the north pole slightly toward the viewer, so Karachi sits just above center.
 const BASE_PITCH = 0.32;
+const EASE_MS = 270; // time constant for easing toward the idle angle
+const GLIDE_MS = 320; // time constant for the momentum glide after a drag
+const MAX_GLIDE = 0.008; // radians per ms
 
 const latLon = (lat: number, lon: number): Vec3 => {
   const p = (lat * Math.PI) / 180;
@@ -89,11 +96,14 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
   let radius = 0;
   let yaw = HOME_YAW;
   let pitch = BASE_PITCH;
+  let offset = 0; // yaw left by drags and glides, on top of the idle angle
+  let glide = 0; // momentum after a drag, radians per ms
   const pointer = { x: 0, y: 0 };
-  const drag = { on: false, id: -1, startX: 0, base: 0, offset: 0 };
+  const drag = { on: false, id: -1, startX: 0, startYaw: 0, x: 0, t: 0, velocity: 0 };
 
   let frame = 0;
   let lastTime = 0;
+  let prevTime = 0;
   let running = false;
   let visible = false;
   let ready = false;
@@ -113,16 +123,44 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
     return true;
   }
 
+  // The idle angle: home, the gentle sway, and the cursor tilt.
+  const idleYaw = (time: number) =>
+    HOME_YAW + Math.sin(time / 4200) * 0.55 + (options.tilt ? pointer.x * 0.5 : 0);
+
+  function step(time: number) {
+    const dt = prevTime ? Math.min(Math.max(time - prevTime, 0), 100) : 16;
+    prevTime = time;
+
+    if (reducedQuery.matches) {
+      yaw = HOME_YAW;
+      pitch = BASE_PITCH;
+      offset = glide = 0;
+      return;
+    }
+
+    // Dragging: the front follows the pointer one to one (a pixel of movement turns
+    // the surface at the center by a pixel), with no easing, sway, or tilt.
+    if (drag.on) {
+      yaw = drag.startYaw - (drag.x - drag.startX) / radius;
+      return;
+    }
+
+    if (glide) {
+      yaw += glide * dt;
+      offset += glide * dt;
+      glide *= Math.exp(-dt / GLIDE_MS);
+      if (Math.abs(glide) < 1e-5) glide = 0;
+    }
+
+    const ease = 1 - Math.exp(-dt / EASE_MS);
+    yaw += (idleYaw(time) + offset - yaw) * ease;
+    pitch += (BASE_PITCH + (options.tilt ? pointer.y * 0.25 : 0) - pitch) * ease;
+  }
+
   function draw(time: number) {
     lastTime = time;
+    step(time);
     const reduced = reducedQuery.matches;
-    const sway = reduced || drag.on ? 0 : Math.sin(time / 4200) * 0.55;
-    const targetYaw = HOME_YAW + sway + pointer.x * 0.5 + drag.offset;
-    const targetPitch = BASE_PITCH + pointer.y * 0.25;
-    // Ease toward the target; a still frame jumps straight there.
-    const ease = reduced ? 1 : 0.06;
-    yaw += (targetYaw - yaw) * ease;
-    pitch += (targetPitch - pitch) * ease;
 
     const cy = Math.cos(yaw);
     const sy = Math.sin(yaw);
@@ -225,6 +263,7 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
     const shouldRun = visible && !document.hidden && !reducedQuery.matches;
     if (shouldRun && !running) {
       running = true;
+      prevTime = 0; // no catch-up jump after a pause
       frame = requestAnimationFrame(loop);
     } else if (!shouldRun && running) {
       running = false;
@@ -237,37 +276,76 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
     }
   }
 
-  const onPointerMove = (event: PointerEvent) => {
-    if (reducedQuery.matches) return;
-    if (options.interactive === 'pointer') {
-      pointer.x = (event.clientX / window.innerWidth - 0.5) * 2;
-      pointer.y = (event.clientY / window.innerHeight - 0.5) * 2;
-    } else if (drag.on && event.pointerId === drag.id) {
-      drag.offset = drag.base + (event.clientX - drag.startX) * 0.012;
-    }
-  };
-
-  const onPointerDown = (event: PointerEvent) => {
-    if (reducedQuery.matches || drag.on) return;
-    if ((event.target as Element).closest('a, button')) return;
+  const insideGlobe = (event: PointerEvent) => {
+    if (!(event.target instanceof Element) || event.target.closest('a, button')) return false;
     const box = canvas.getBoundingClientRect();
     const dx = event.clientX - (box.left + box.width / 2);
     const dy = event.clientY - (box.top + box.height / 2);
-    if (Math.hypot(dx, dy) > radius) return;
+    return Math.hypot(dx, dy) <= radius;
+  };
+
+  const area = options.dragArea;
+  const setCursor = (cursor: 'grab' | 'grabbing' | '') => {
+    if (cursor) area.dataset.globeCursor = cursor;
+    else delete area.dataset.globeCursor;
+  };
+
+  const onPointerMove = (event: PointerEvent) => {
+    if (reducedQuery.matches) return;
+    if (drag.on) {
+      if (event.pointerId !== drag.id) return;
+      // Smoothed angular speed, kept for the glide on release.
+      const dt = event.timeStamp - drag.t;
+      if (dt > 0) {
+        const speed = -(event.clientX - drag.x) / radius / dt;
+        drag.velocity = drag.velocity * 0.6 + speed * 0.4;
+      }
+      drag.x = event.clientX;
+      drag.t = event.timeStamp;
+      return;
+    }
+    pointer.x = (event.clientX / window.innerWidth - 0.5) * 2;
+    pointer.y = (event.clientY / window.innerHeight - 0.5) * 2;
+  };
+
+  // Grab cursor while a mouse is over the globe (not over a link or button).
+  const onAreaMove = (event: PointerEvent) => {
+    if (drag.on || event.pointerType !== 'mouse') return;
+    setCursor(!reducedQuery.matches && insideGlobe(event) ? 'grab' : '');
+  };
+
+  const onAreaLeave = () => {
+    if (!drag.on) setCursor('');
+  };
+
+  const onPointerDown = (event: PointerEvent) => {
+    if (reducedQuery.matches || drag.on || event.button !== 0 || !insideGlobe(event)) return;
     event.preventDefault(); // a mouse or pen drag would otherwise select the hero text
     drag.on = true;
     drag.id = event.pointerId;
-    drag.startX = event.clientX;
-    drag.base = drag.offset;
+    drag.startX = drag.x = event.clientX;
+    drag.t = event.timeStamp;
+    drag.startYaw = yaw;
+    drag.velocity = 0;
+    glide = 0;
+    if (event.pointerType === 'mouse') setCursor('grabbing');
   };
 
+  // Release: the idle angle picks up from where the drag left the globe, so the
+  // sway resumes from the current angle, plus a short glide if it was flicked.
   const onPointerUp = (event: PointerEvent) => {
-    if (event.pointerId === drag.id) drag.on = false;
+    if (!drag.on || event.pointerId !== drag.id) return;
+    drag.on = false;
+    offset = yaw - idleYaw(performance.now());
+    const stale = event.type === 'pointercancel' || event.timeStamp - drag.t > 80;
+    glide = stale ? 0 : Math.max(-MAX_GLIDE, Math.min(MAX_GLIDE, drag.velocity));
+    if (event.pointerType === 'mouse') setCursor(insideGlobe(event) ? 'grab' : '');
   };
 
   window.addEventListener('pointermove', onPointerMove, { passive: true });
-  const dragArea = options.interactive === 'drag' ? options.dragArea : undefined;
-  dragArea?.addEventListener('pointerdown', onPointerDown);
+  area.addEventListener('pointermove', onAreaMove, { passive: true });
+  area.addEventListener('pointerleave', onAreaLeave);
+  area.addEventListener('pointerdown', onPointerDown);
   window.addEventListener('pointerup', onPointerUp);
   window.addEventListener('pointercancel', onPointerUp);
 
@@ -295,7 +373,10 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
     observer.disconnect();
     resizeObserver.disconnect();
     window.removeEventListener('pointermove', onPointerMove);
-    dragArea?.removeEventListener('pointerdown', onPointerDown);
+    area.removeEventListener('pointermove', onAreaMove);
+    area.removeEventListener('pointerleave', onAreaLeave);
+    area.removeEventListener('pointerdown', onPointerDown);
+    setCursor('');
     window.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('pointercancel', onPointerUp);
     document.removeEventListener('visibilitychange', update);

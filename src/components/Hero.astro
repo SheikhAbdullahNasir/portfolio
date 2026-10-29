@@ -77,7 +77,7 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
     const start = () =>
       import('../scripts/globe').then(({ initGlobe }) =>
         initGlobe(canvas, {
-          interactive: finePointer.matches ? 'pointer' : 'drag',
+          tilt: finePointer.matches,
           dragArea: hero,
           onReady: () => slot.classList.add('is-ready'),
         }),
@@ -119,19 +119,29 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
 </script>
 
 <style>
+  /* The hero spans the full viewport width (so the glow has no edges); its content
+     keeps the same inset as the other sections' max-width box. */
   .hero {
+    --hero-inset: max(var(--gutter), calc((100% - var(--content-max)) / 2 + var(--gutter)));
     position: relative;
     display: grid;
     align-items: start;
     min-height: 100svh;
-    max-width: var(--content-max);
-    margin-inline: auto;
-    padding: calc(var(--nav-offset) + 10svh) var(--gutter) 64px;
+    padding: calc(var(--nav-offset) + 10svh) var(--hero-inset) 64px;
     overflow: hidden;
   }
 
   .hero:focus {
     outline: none;
+  }
+
+  /* Set by src/scripts/globe.ts while a mouse is over the globe or dragging it. */
+  .hero[data-globe-cursor='grab'] {
+    cursor: grab;
+  }
+
+  .hero[data-globe-cursor='grabbing'] {
+    cursor: grabbing;
   }
 
   /* Touch screens drag the globe sideways; vertical scrolling and pinch zoom stay native. */
@@ -141,7 +151,8 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
     }
   }
 
-  /* Cursor glow: desktop mouse only, never under reduced motion. */
+  /* Cursor glow: desktop mouse only, never under reduced motion. Soft falloff from
+     the pointer, and the whole layer fades out toward the bottom of the hero. */
   .hero__glow {
     display: none;
     position: absolute;
@@ -150,8 +161,11 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
     background: radial-gradient(
       var(--hero-glow-size) circle at var(--glow-x, 50%) var(--glow-y, 50%),
       var(--hero-glow),
-      transparent 70%
+      color-mix(in srgb, var(--hero-glow) 45%, transparent) 35%,
+      color-mix(in srgb, var(--hero-glow) 12%, transparent) 65%,
+      transparent
     );
+    mask-image: linear-gradient(to bottom, #000 40%, transparent);
     opacity: 0;
     transition: opacity 0.4s ease;
   }
@@ -308,7 +322,7 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
 
     .hero__object {
       top: 50%;
-      right: var(--gutter);
+      right: var(--hero-inset);
       width: min(46vw, 640px);
       transform: translateY(-50%);
     }

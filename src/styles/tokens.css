@@ -88,8 +88,8 @@
   --stack-dim: 0.3; /* covered card darkens to this overlay opacity */
 
   /* Hero effects */
-  --hero-glow: rgba(143, 179, 255, 0.07); /* cursor glow color (desktop) */
-  --hero-glow-size: 560px;
+  --hero-glow: rgba(255, 244, 230, 0.05); /* cursor glow: neutral warm white (desktop) */
+  --hero-glow-size: 420px; /* radius of the glow */
   --globe-opacity: 0.6; /* mobile: behind the text */
   --reveal-duration: 0.7s;
   --reveal-blur: 6px;
