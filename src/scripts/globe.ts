@@ -29,6 +29,9 @@ const CITIES: [number, number][] = [
 ];
 const ARC_STEPS = 48;
 const DOT_SHADES = 16; // brightness steps for the dots, from the edge to the front
+const IDLE_FPS = 30; // frame rate while nobody is dragging (DECISIONS #41)
+const IDLE_FRAME_MS = 1000 / IDLE_FPS;
+const IDLE_SLACK_MS = 4; // a frame this early still counts, so timing jitter skips none
 // Turns Karachi toward the viewer. (The reference used -67°, which put Karachi on
 // the far side; a point at longitude L faces the viewer at a yaw of +L.)
 const HOME_YAW = (KARACHI[1] * Math.PI) / 180;
@@ -267,8 +270,21 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
     }
   }
 
+  // Idle (sway, tilt, travelling dots) draws at IDLE_FPS, which saves about a third of
+  // the globe's main-thread time; a drag and its glide draw every frame so they stay
+  // smooth. Idle frames follow a running schedule rather than "time since the last
+  // draw", so a browser running below 60 fps still averages IDLE_FPS instead of
+  // dropping to every third frame.
+  let nextIdleDraw = 0;
   function loop(time: number) {
-    draw(time);
+    if (drag.on || glide) {
+      draw(time);
+      nextIdleDraw = time + IDLE_FRAME_MS;
+    } else if (time >= nextIdleDraw - IDLE_SLACK_MS) {
+      draw(time);
+      // Behind by more than a frame (after a pause or a long task): start over from now.
+      nextIdleDraw = time - nextIdleDraw > IDLE_FRAME_MS ? time + IDLE_FRAME_MS : nextIdleDraw + IDLE_FRAME_MS;
+    }
     if (running) frame = requestAnimationFrame(loop);
   }
 

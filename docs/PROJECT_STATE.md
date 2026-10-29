@@ -3,7 +3,7 @@
 _Last updated 2026-10-29 (milestone 7 done, waiting for review, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 7 (quality pass) is done and waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Committed locally, not pushed yet. Next after approval: milestone 8 (custom domain).
+Milestone 7 (quality pass) is done and pushed (commit `37d8600`), waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Follow-up pushed as its own commit so the two can be compared: the globe at 30 fps while idle (DECISIONS #41). Next after approval: milestone 8 (custom domain).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -119,9 +119,16 @@ Checked on the built site (`dist/`) through a throwaway static server in the scr
 - The share card as LinkedIn, X, or WhatsApp actually render it (needs the deployed site; LinkedIn Post Inspector or a test post).
 - The voice-control "label in name" case: the monogram shows "A" but is named "Back to top". Left as is.
 
-## Ideas, not done (need Abdullah's call)
-- Run the globe at 30 frames per second while idle (full rate while dragging): would roughly halve its cost on slow phones, but changes how the approved sway and travelling dots feel.
-- `content-visibility: auto` on the lower sections to shorten the first layout; risky with the sticky stack, anchor jumps, and reveals, so not tried.
+## Globe at 30 fps while idle (Abdullah, 2026-10-29; DECISIONS #41)
+- Asked: 30 fps while idle, full speed while dragging, in its own commit to compare against milestone 7. `IDLE_FPS` in `src/scripts/globe.ts`.
+- The first version (skip frames until 29ms had passed) fell to 20 to 24 fps idle when the browser ran below 60 fps (4x CPU throttling); now a running 33ms schedule, which averages 27 to 30 there.
+- Measured in headless Chrome on the built site, milestone 7 build next to this one:
+  - Frames drawn per second, unthrottled, 1440x900: idle 30 (was 60), back to 30 after a drag; dragging and the glide the same as milestone 7.
+  - Main-thread time while the hero is on screen: unthrottled 1440 about 120 vs 177 to 189 ms per second (about 30 to 37% less; scripting about half); 2x CPU 390 about 249 vs 395; 4x CPU 390 about 630 to 700 vs 775 to 940.
+  - With 4x CPU throttling, frame counts swung a lot between runs on this machine (the milestone 7 build itself idled at 15 to 37 fps), so throttled drag rates are not a fair comparison; the drag path is unchanged and draws every frame.
+- `npx astro check` 0 errors, 0 warnings; build passes.
+- Not checked: how the 30 fps sway, tilt, and travelling dots look by eye (the pane is throttled; judge on the preview against `37d8600`), real phones, 120Hz screens (the schedule should still give 30).
+- Declined: `content-visibility: auto` on the lower sections (Abdullah, 2026-10-29).
 
 ## Milestone 6 approved (Abdullah, 2026-10-29)
 - The 220px glow and the gentler melt feel right; keep the melt. Abdullah raised Melt from 7 to 9 himself (commit `2e59080`). Milestone 6 is done.
