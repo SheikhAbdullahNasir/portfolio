@@ -1,0 +1,163 @@
+---
+// Dev-only page at /content-preview: a plain dump of every piece of content and
+// placeholder, for reviewing the content model. It is not built in production.
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { getProjects, projectNumber } from '../lib/projects';
+import { site, resume } from '../data/site';
+import { topLabel, navSections } from '../data/nav';
+import { hero } from '../data/hero';
+import { now } from '../data/now';
+import { about } from '../data/about';
+import { beyond } from '../data/beyond';
+import { contact, footer } from '../data/contact';
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { devPage: 'content-preview' } }] : [];
+}
+
+const projects = await getProjects();
+---
+
+<BaseLayout title={`Content preview · ${site.name}`}>
+  <div class="preview">
+    <h1>Content preview (dev only)</h1>
+    <p>Dashed accent boxes are placeholders still waiting for content.</p>
+
+    <h2>Site and nav</h2>
+    <p>{site.name} · {site.monogram} · {site.location}</p>
+    <p>{site.description}</p>
+    <p>Pill at top: {topLabel}</p>
+    <ol>
+      {navSections.map((s) => <li>{s.number} {s.menuLabel} (pill: {s.label}, #{s.id})</li>)}
+    </ol>
+    <p>
+      {resume.pillLabel} / {resume.label}: {resume.href ? <a href={resume.href}>{resume.fileName}</a> : <Placeholder name="resume" />}
+    </p>
+
+    <h2>Hero</h2>
+    <p>{hero.label}</p>
+    <p><strong>{hero.name}</strong> · {hero.oneLiner}</p>
+    <p>{hero.status}</p>
+    <p>{hero.primaryCta.label} · {hero.secondaryCta.label} · {hero.globeCaption}</p>
+
+    <h2>Selected work ({projects.length})</h2>
+    {
+      projects.map((p, i) => (
+        <article class="project" style={`--card: var(--card-${p.data.color}); --card-ink: var(--card-${p.data.color}-ink); --card-muted: var(--card-${p.data.color}-muted)`}>
+          <h3>{projectNumber(i)} {p.data.title} · {p.data.status}</h3>
+          <p><strong>{p.data.headline}</strong></p>
+          <p>{p.data.summary}</p>
+          <p class="muted">Mobile: {p.data.mobileSummary ?? p.data.summary}</p>
+          <p>Why: {p.data.why ?? <Placeholder name="projectWhy" />}</p>
+          <p>Facts: {p.data.facts.join(' · ')}</p>
+          <p>Stack: {p.data.stack.length > 0 ? p.data.stack.join(', ') : <Placeholder name="projectStack" />}</p>
+          <p>
+            Live: {p.data.links.live ? <a href={p.data.links.live}>{p.data.links.live}</a> : 'none'} · GitHub:{' '}
+            {p.data.links.github ? <a href={p.data.links.github}>{p.data.links.github}</a> : <Placeholder name="projectGithub" />}
+          </p>
+          {p.data.visual.type === 'screenshots' ? (
+            <div class="shots">
+              {p.data.visual.images.map((img) => (
+                <figure>
+                  <Image src={img.src} alt={img.alt} width={360} />
+                  {img.note && <figcaption class="muted">Note: {img.note}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          ) : (
+            <ol>
+              {p.data.visual.steps.map((step) => (
+                <li>{step.title}{step.detail && ` (${step.detail})`}</li>
+              ))}
+            </ol>
+          )}
+        </article>
+      ))
+    }
+
+    <h2>{now.heading} · Last updated {now.lastUpdated}</h2>
+    <ul>{now.items.map((item) => <li>{item.label}: {item.text}</li>)}</ul>
+
+    <h2>{about.heading}</h2>
+    <ol>{about.timeline.map((t) => <li>{t}</li>)}</ol>
+    <p>{about.paragraph}</p>
+
+    <h2>{beyond.heading} · {beyond.hint.desktop} / {beyond.hint.touch}</h2>
+    <h3>{beyond.cricket.label}: {beyond.cricket.title}</h3>
+    <p>{beyond.cricket.text}</p>
+    <p class="muted">Reveal: {beyond.cricket.reveal} · {beyond.cricket.chips.join(' | ')}</p>
+    <h3>{beyond.gaming.title} · {beyond.gaming.header.join(' | ')}</h3>
+    <dl>{beyond.gaming.list.map((row) => <><dt>{row.term}</dt><dd>{row.value}</dd></>)}</dl>
+    <p class="muted">Reveal: {beyond.gaming.reveal}</p>
+    <h3>{beyond.events.header} · {beyond.events.passLabel}</h3>
+    <p>{beyond.events.attendeeLabel}: {beyond.events.attendeeName}</p>
+    <p>{beyond.events.text}</p>
+    <p class="muted">{beyond.events.stickers.join(' | ')}</p>
+    <h3>{beyond.reading.label}: {beyond.reading.title}</h3>
+    <p>{beyond.reading.text}</p>
+    <p class="muted">Book: {beyond.reading.book.title} by {beyond.reading.book.author}</p>
+
+    <h2>Contact</h2>
+    <p><strong>{contact.headline}</strong></p>
+    <p>{contact.subLine}</p>
+    <p>{contact.email} · {contact.copyLabel} / {contact.copiedLabel}</p>
+    <ul>{contact.socials.map((s) => <li><a href={s.href}>{s.name}</a> {s.handle}</li>)}</ul>
+
+    <h2>Footer</h2>
+    <p>{footer.copyright(new Date().getFullYear())} · {footer.downloadLabel} · {footer.backToTopLabel}</p>
+  </div>
+</BaseLayout>
+
+<style>
+  .preview {
+    max-width: 880px;
+    margin-inline: auto;
+    padding: 48px var(--gutter) 96px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .preview h2 {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .project {
+    display: grid;
+    gap: 10px;
+    padding: 28px;
+    border-radius: var(--radius-project);
+    background: var(--card);
+    color: var(--card-ink);
+  }
+
+  .project .muted {
+    color: var(--card-muted);
+  }
+
+  .shots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .shots figure {
+    margin: 0;
+    max-width: 360px;
+  }
+
+  dt {
+    font-weight: var(--weight-semibold);
+  }
+
+  dd {
+    margin: 0 0 8px;
+  }
+</style>

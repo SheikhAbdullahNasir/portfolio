@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { site, sections } from '../data/site';
+import { site } from '../data/site';
+import { navSections } from '../data/nav';
 ---
 
 <BaseLayout>
@@ -10,7 +11,7 @@ import { site, sections } from '../data/site';
   </section>
 
   {
-    sections.map((section) => (
+    navSections.map((section) => (
       <section id={section.id} class="section" aria-labelledby={`${section.id}-heading`}>
         <h2 id={`${section.id}-heading`} class="section__heading">
           {section.label}

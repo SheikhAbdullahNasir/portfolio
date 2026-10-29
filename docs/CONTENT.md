@@ -35,7 +35,7 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - Facts: "No login", "No GitHub writes", "AI off in the MVP"
 - Stack: [Stack: confirm from repo]
 - Links: live site https://docscoutserver-production.up.railway.app/ ; GitHub [link pending]
-- Visual: two screenshots in `docs/reference/assets/`: `docscout-home.jpg` (needs a retake, see note) and `docscout-issue.jpg`.
+- Visual: two screenshots in `src/assets/projects/docscout/`: `docscout-home.png` (retaken 2026-10-29) and `docscout-issue.jpg`.
 - Honesty notes: lead with labeled issues; the documentation-findings section exists but rarely returns results, so do not claim it "finds documentation problems". The AI agent phase is planned, not built.
 
 ### Project 02: Patient Voice Agent
@@ -46,6 +46,7 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - Mobile summary: "Callers talk to Maya, who registers or updates their record. 47 tests passing."
 - Why: [Why I built it, in your words]
 - Facts: "47 tests passing", "Vapi voice pipeline", "FastAPI + Supabase"
+- Stack: Python, FastAPI, PostgreSQL (Supabase), SQLAlchemy, Vapi (confirmed by Abdullah 2026-10-29)
 - Links: GitHub [link pending]. No live demo and no phone number on the site.
 - Visual: flow diagram (HTML/CSS boxes), verify against the repo before launch:
   1. Caller (phone call)
@@ -118,5 +119,4 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - DocScout stack (verify from its repo).
 - Patient Voice Agent "why" line, headline confirmation, diagram check against its repo, dashboard status.
 - Résumé PDF.
-- A fresh DocScout home screenshot without the accidental text selection on "next".
 - Which skills to list as proven (no skills section until decided).

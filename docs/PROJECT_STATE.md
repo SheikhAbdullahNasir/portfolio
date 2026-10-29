@@ -1,52 +1,66 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 1 scaffold, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (milestone 2 content model, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 1 (scaffold) is done locally and waiting for Abdullah's review. Next: the Vercel preview deploy (the last part of milestone 1), then milestone 2 (content model).
+Milestone 2 (content model) is done locally and waiting for Abdullah's review. Next: milestone 3 (nav and hero, static).
+
+## Live preview
+- Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
+- Milestone 1 is deployed there (commit `5e63cde`). Milestone 2 is not pushed yet.
 
 ## Done
 - Content plan and copy (`docs/CONTENT.md`).
 - Design direction explored and chosen as a starting point (prototypes on a Claude Design canvas named "Portfolio V2 Directions", private to Abdullah; key code copied into `docs/reference/`).
 - Stack and hosting chosen (`docs/DECISIONS.md` #18, #19).
-- **Milestone 1 scaffold (local):**
-  - Astro 7.4.4 + TypeScript 6 (strict preset), static output. `@astrojs/check` for type checking.
-  - Design tokens in `src/styles/tokens.css` (all values from BUILD_SPEC section 3, including the five card colors, font stacks, radii, gutters, focus ring).
-  - Global base styles in `src/styles/global.css`: dark background, focus-visible ring, skip link, `.visually-hidden`, global `prefers-reduced-motion` rule.
-  - Fonts self-hosted through Fontsource variable packages (Bricolage Grotesque, Geist, Geist Mono), `font-display: swap`, split by `unicode-range` so browsers only download the subsets the page uses.
-  - Base layout `src/layouts/BaseLayout.astro`: head meta (title, description from CONTENT.md, theme color, favicon), skip link, empty `header` and `footer` slots for the nav and footer.
-  - Home page `src/pages/index.astro`: empty hero (`#top`, visually hidden `h1`) plus empty sections `#work`, `#now`, `#about`, `#beyond`, `#contact`, each with only its heading. Section ids and labels live in `src/data/site.ts`.
-  - Placeholder "A" favicon at `public/favicon.svg` (final favicon is milestone 7).
-  - `.claude/launch.json` with a `preview` entry for previewing the build.
-  - Node requirement: Astro 7.4.4 needs Node 22.23.4 or newer. Recorded in `package.json` `engines`. Abdullah's machine was upgraded from 22.19.0 to 22.23.4 through winget on 2026-10-29.
+- **Milestone 1 scaffold** (commit `5e63cde`, deployed to Vercel):
+  - Astro 7.4.4 + TypeScript 6 (strict preset), static output. Node 22.23.4 or newer (`package.json` `engines`).
+  - Design tokens in `src/styles/tokens.css`, base styles in `src/styles/global.css`.
+  - Self-hosted Fontsource variable fonts (Bricolage Grotesque, Geist, Geist Mono).
+  - Base layout `src/layouts/BaseLayout.astro` with skip link and empty header and footer slots.
+  - Home page with an empty hero and empty sections `#work`, `#now`, `#about`, `#beyond`, `#contact`.
+- **Milestone 2 content model** (local, not committed):
+  - Projects collection: schema in `src/content.config.ts`, entries in `src/content/projects/docscout.md` and `patient-voice-agent.md`. Fields as in BUILD_SPEC 2, plus `mobileSummary` (CONTENT.md has a mobile summary for each project) and an optional `note` on each screenshot. `visual` is either `screenshots` (images through Astro's `image()` helper) or `diagram` (steps).
+  - DocScout screenshots live in `src/assets/projects/docscout/` so Astro can optimize them (served as WebP). `docscout-home.png` is Abdullah's fresh retake (2026-10-29, 870x680, no browser chrome, no text selection; no crop needed). `docscout-issue.jpg` is copied from `docs/reference/assets/`. The old home screenshot with the selection was deleted from `docs/reference/assets/`.
+  - Card color names in `src/data/palette.ts` (green, blue, burgundy, gold, plum), matching the `--card-*` tokens. The schema only accepts these names.
+  - `src/lib/projects.ts`: `getProjects()` returns published projects sorted by `order`; `projectNumber()` gives "01", "02".
+  - Typed site data from CONTENT.md: `src/data/site.ts` (site, résumé), `nav.ts`, `hero.ts`, `now.ts`, `about.ts`, `beyond.ts`, `contact.ts` (contact and footer). The home page now reads its section list from `nav.ts`.
+  - Placeholders: missing content is left out of the data (optional field, empty list, no link), and the page renders the matching text from `src/data/placeholders.ts` through `src/components/Placeholder.astro` (dashed accent box, mono font). Adding the real content makes the placeholder disappear by itself.
+  - Dev-only review page at `/content-preview` (`src/pages/[devPage].astro`): every piece of content and every placeholder in plain form, with project cards in their colors. It only exists under `npm run dev`; the production build does not include it.
+  - The home page still shows empty sections. Rendering the content there starts in milestone 3.
+
+## Verified (milestone 2)
+- `npx astro check`: 0 errors, 0 warnings, 0 hints (17 files).
+- `npm run build`: passes; output is only `index.html` (the dev preview page is not built).
+- Schema validation: temporarily setting DocScout's `color` to `red` made `astro sync` fail with a clear schema error; the file was restored.
+- `/content-preview` in the dev server: both projects listed in order ("01 DocScout · MVP · Live", "02 Patient Voice Agent · Working prototype"), both DocScout screenshots load through Astro's image pipeline, no console errors, no horizontal scroll at 1024px. Six placeholders render: résumé, DocScout stack, DocScout GitHub, Patient Voice Agent why, Patient Voice Agent stack, Patient Voice Agent GitHub.
+- Patient Voice Agent stack filled in from Abdullah (Python, FastAPI, PostgreSQL (Supabase), SQLAlchemy, Vapi); five placeholders remain.
+- After swapping in the new DocScout home screenshot: `astro check` 0 errors, build passes, `/content-preview` serves both screenshots as WebP (HTTP 200) and shows no retake note.
+- No em dashes in `src/`.
 
 ## Verified (milestone 1)
-- `npm install`: completed, 0 vulnerabilities.
-- `npm run build`: passes, 1 page built, no warnings.
-- `npx astro check`: 0 errors, 0 warnings, 0 hints.
-- Built page ships no JavaScript (0 script tags); CSS is one file, about 7 KB uncompressed.
-- In the browser pane on the production preview (`npm run preview`):
-  - 1440px wide: side padding 80px, section heading 56px, no horizontal scroll.
-  - 390px wide: side padding 20px, section heading 32px, no horizontal scroll.
-  - Bricolage Grotesque and Geist load (latin subset only); headings render in Bricolage.
-  - First Tab focuses the skip link, which becomes visible with the accent focus ring and is 48px tall.
+- `npm run build` and `npx astro check` passed. No JavaScript shipped.
+- 1440px and 390px: correct side padding (80px, 20px), no horizontal scroll, fonts load, skip link visible on focus with the accent ring.
 
 ## Not verified yet
-- Vercel preview deploy (part of milestone 1 in BUILD_SPEC). Not done: the repo needs to be imported in Vercel by Abdullah (see `docs/DEPLOY.md`), or done on his go-ahead.
 - Real-device testing (needs Abdullah's phone and laptop).
 - Lighthouse scores (milestone 7).
-- Font layout shift: fallbacks are not size-matched yet. Revisit in milestone 7 (for example preloading the latin display font or adding fallback metric overrides).
+- Font layout shift: fallbacks are not size-matched yet. Revisit in milestone 7.
+- Screenshot alt text was written from what the screenshots show; Abdullah may want to reword it.
 
 ## Not started
-- Milestones 2 to 8.
+- Milestones 3 to 8.
 
 ## Placeholders to fill (from Abdullah)
-- GitHub links for DocScout and Patient Voice Agent.
-- DocScout stack (verify from repo).
-- Patient Voice Agent: "why" line, headline confirmation, flow diagram check against the repo, dashboard status.
-- Résumé PDF.
-- New DocScout home screenshot (current one has an accidental text selection on "next").
-- Skills to list, if any.
+Rendered on the site where marked "visible". The rest are notes in the project files.
+- GitHub link for DocScout (visible: `links.github` in `docscout.md`).
+- GitHub link for Patient Voice Agent (visible: `links.github` in `patient-voice-agent.md`).
+- DocScout stack, verify from repo (visible: `stack` in `docscout.md`).
+- Patient Voice Agent "why" line (visible: `why` in `patient-voice-agent.md`).
+- Patient Voice Agent headline confirmation (current text is Claude's draft; comment in the file).
+- Patient Voice Agent flow diagram check against the repo, and dashboard status (comment in the file).
+- Résumé PDF (visible: set `href` in `src/data/site.ts` once `public/Abdullah-Bin-Nasir-Resume.pdf` exists).
+- Skills to list, if any (no skills section until decided).
 
 ## Open design questions (do not block the build)
 - Final display font (Bricolage Grotesque is provisional).
@@ -56,9 +70,8 @@ Milestone 1 (scaffold) is done locally and waiting for Abdullah's review. Next: 
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah reviews milestone 1 and commits it.
-2. Push to GitHub and import the repo in Vercel for the first preview deploy (`docs/DEPLOY.md` section 1).
-3. Start milestone 2: projects content collection and typed site data from `docs/CONTENT.md`.
+1. Abdullah reviews milestone 2 (run `npm run dev`, open http://localhost:4321/content-preview) and commits it.
+2. Start milestone 3: smart pill nav, menu overlay with full keyboard support, hero text and buttons.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
