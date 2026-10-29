@@ -1,10 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// Static output for Vercel. `site` makes the canonical link and the share image URLs
-// absolute. It is the Vercel preview address for now; change it to the custom domain
-// when it is connected (milestone 8, docs/DEPLOY.md).
+// Static output for Vercel. `site` is the primary domain (the apex redirects to www).
+// It makes the canonical link, the share image URLs, the sitemap, and robots.txt
+// absolute (docs/DEPLOY.md).
 export default defineConfig({
   output: 'static',
-  site: 'https://portfolio-murex-two-31.vercel.app',
+  site: 'https://www.abdullahbinnasir.site',
 });

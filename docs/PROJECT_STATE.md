@@ -3,11 +3,19 @@
 _Last updated 2026-10-29 (milestone 7 done, waiting for review, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Every placeholder is filled (résumé and the Patient Voice Agent "why" line, 2026-10-29). Milestone 7 (quality pass) is done and pushed (commit `37d8600`), waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Follow-up pushed as its own commit so the two can be compared: the globe at 30 fps while idle (DECISIONS #41). Next after approval: milestone 8 (custom domain).
+Every placeholder is filled (résumé and the Patient Voice Agent "why" line, 2026-10-29). Milestone 7 (quality pass) is done and pushed (commit `37d8600`), waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Follow-up pushed as its own commit so the two can be compared: the globe at 30 fps while idle (DECISIONS #41). Milestone 8 (launch): Abdullah connected the domain; the site is live at https://www.abdullahbinnasir.site and `site`, canonical, Open Graph, sitemap, and robots.txt now use it (DECISIONS #44).
 
-## Live preview
-- Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
-- Milestone 3 is pushed (commit `4d02498`): the live preview now shows the pill nav, the menu, and the hero text. Sections below the hero are still empty; `/content-preview` is dev-only and not deployed.
+## Milestone 8 launch (2026-10-29)
+- Abdullah connected the GoDaddy domain in Vercel: www is primary, the apex and `http://` redirect to `https://www.abdullahbinnasir.site/` with 308 (checked with curl before the change).
+- `site` in `astro.config.mjs` changed from the Vercel address to `https://www.abdullahbinnasir.site`.
+- There was no sitemap before (`/sitemap.xml` returned 404). Added `src/pages/sitemap.xml.ts` (lists `/`; the 404 page is left out) and replaced `public/robots.txt` with `src/pages/robots.txt.ts`, which adds the `Sitemap:` line. Both are built from `site`, with no new dependency (`@astrojs/sitemap` would be one).
+- Share image not rebuilt: it shows no URL; only its address in the meta tags changed.
+- Checked in the build: canonical `https://www.abdullahbinnasir.site/`, `og:url` and `og:image` on the new domain on both pages, `sitemap.xml` and `robots.txt` correct, no Vercel address left in `dist/`, `src/`, `scripts/`, or the config. `npx astro check` 0 errors, 0 warnings; build passes.
+- Checked on the live site after the push: see the entry below.
+
+## Live site
+- **https://www.abdullahbinnasir.site** (since 2026-10-29). The apex and `http://` redirect to it (308). Vercel deploys every push to `main`; the project address https://portfolio-murex-two-31.vercel.app/ still works. Details in `docs/DEPLOY.md`.
+- `/content-preview` is dev-only and not deployed.
 
 ## Done
 - Content plan and copy (`docs/CONTENT.md`).
@@ -244,7 +252,7 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 - Screenshot alt text was written from what the screenshots show; Abdullah may want to reword it.
 
 ## Not started
-- Milestone 8.
+- Nothing from the build spec's milestones. Later items (BUILD_SPEC "Later"): case study pages, a replacement 3D object, an About personal touch, more projects.
 
 ## Placeholders to fill (from Abdullah)
 None. The built pages (`index.html`, `404.html`) contain no placeholder (checked 2026-10-29: zero `data-placeholder` markers and none of the placeholder texts).
@@ -275,8 +283,9 @@ Notes, not shown on the site:
 - About personal touch without a photo.
 
 ## Next useful action
-1. Abdullah reviews milestone 7: the 404 page, share image, favicon, and the draft copy. Then push, run PageSpeed Insights on the Vercel URL, and check the share card with LinkedIn Post Inspector.
-2. Milestone 8 (custom domain), including changing `site` in `astro.config.mjs`.
+1. Abdullah reviews milestone 7 and the 30 fps globe on the live site.
+2. Run PageSpeed Insights on https://www.abdullahbinnasir.site (Mobile, two or three runs, take the median) and check the share card with LinkedIn Post Inspector.
+3. Optional: Google Search Console with the sitemap (`docs/DEPLOY.md` step 2.6).
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
