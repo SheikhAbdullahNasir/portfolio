@@ -18,5 +18,5 @@
 
 ## 3. Notes
 - The domain currently hosts a sample project. Pointing it to Vercel replaces that site. Move the sample elsewhere first if you still need it.
-- Keep `public/Abdullah-Bin-Nasir-Resume.pdf` as the single résumé file so the site never links an old copy.
+- Keep `public/Abdullah_Bin_Nasir_Resume.pdf` as the single résumé file so the site never links an old copy. To update it, replace the file with the same name; if the name changes, update `resume` in `src/data/site.ts`.
 - If anything looks wrong after switching, the old records can be restored in GoDaddy.

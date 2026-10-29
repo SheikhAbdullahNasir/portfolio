@@ -3,7 +3,7 @@
 _Last updated 2026-10-29 (milestone 7 done, waiting for review, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 7 (quality pass) is done and pushed (commit `37d8600`), waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Follow-up pushed as its own commit so the two can be compared: the globe at 30 fps while idle (DECISIONS #41). Next after approval: milestone 8 (custom domain).
+Every placeholder is filled (résumé and the Patient Voice Agent "why" line, 2026-10-29). Milestone 7 (quality pass) is done and pushed (commit `37d8600`), waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Follow-up pushed as its own commit so the two can be compared: the globe at 30 fps while idle (DECISIONS #41). Next after approval: milestone 8 (custom domain).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -247,9 +247,7 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 - Milestone 8.
 
 ## Placeholders to fill (from Abdullah)
-Only two placeholders are still visible on the site:
-- Résumé PDF (set `href` in `src/data/site.ts` once `public/Abdullah-Bin-Nasir-Resume.pdf` exists).
-- Patient Voice Agent "why" line (`why` in `patient-voice-agent.md`).
+None. The built pages (`index.html`, `404.html`) contain no placeholder (checked 2026-10-29: zero `data-placeholder` markers and none of the placeholder texts).
 
 Notes, not shown on the site:
 - Patient Voice Agent GitHub link: the repo is private for now, so the card has no GitHub button and no placeholder (`githubPrivate: true` in `patient-voice-agent.md`). When the repo goes public, replace that line with `github: <url>`; the button then appears on its own.
@@ -257,6 +255,12 @@ Notes, not shown on the site:
 - Patient Voice Agent flow diagram check against the repo, and dashboard status (comment in the file).
 - Skills to list, if any (no skills section until decided).
 - Beyond the code copy needs edits later (Abdullah to provide).
+
+## Résumé and last placeholder (Abdullah, 2026-10-29)
+- Résumé: `public/Abdullah_Bin_Nasir_Resume.pdf`, added by Abdullah and used exactly as is (underscores, not the hyphenated name the docs planned; `resume` in `src/data/site.ts`, DEPLOY.md updated). Linked from the pill (desktop), the menu, the contact tile, the contact "Download PDF" link, and the footer "Download resume PDF". The pill, menu, and tile open it in a new tab (with a hidden "(opens in a new tab)"); the two download links download it and open it in a new tab where a browser ignores `download`.
+- Patient Voice Agent "why": "A personal project to explore voice AI with real backend validation." (desktop card; mobile hides the why line, as for DocScout).
+- Checked: `npx astro check` 0 errors, 0 warnings; build passes; the built home page and 404 page have zero placeholders; five résumé links on home; `dist/` holds the PDF byte for byte (54,804 bytes) and the server returns it with status 200. In headless Chrome at 1440x900, 1280x680, 1024x768, 390x844, and 360x640: both cards fit with nothing overflowing (the Patient Voice Agent text ends 41 to 183px above the card bottom on desktop), the pill is 426px wide on desktop with a 44px Resume link, résumé tile 72px tall, download links 44px, no horizontal scroll. Screenshot of the contact section at 1440 looked right.
+- Not checked: opening the PDF in a real browser tab and the download on phones (iOS Safari may show it inline instead).
 
 ## Content update (Abdullah, 2026-10-29)
 - DocScout: GitHub link https://github.com/SheikhAbdullahNasir/docscout and stack TypeScript, React, Node.js, Express.js (in `docscout.md` and CONTENT.md). The card now shows Visit live site and GitHub side by side, and the stack line on desktop.

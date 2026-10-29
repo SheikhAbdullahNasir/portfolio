@@ -40,6 +40,7 @@ const onHome = Astro.url.pathname === '/';
         resume.href ? (
           <a class="menu__resume" href={resume.href} target="_blank" rel="noopener">
             {resume.label}
+            <span class="visually-hidden"> (opens in a new tab)</span>
           </a>
         ) : (
           <Placeholder name="resume" />

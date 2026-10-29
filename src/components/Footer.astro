@@ -1,5 +1,6 @@
 ---
 // Footer: copyright (year at build time), résumé download, back to top.
+// The download link opens the PDF in a new tab where a browser ignores `download`.
 import Icon from './Icon.astro';
 import Placeholder from './Placeholder.astro';
 import { footer } from '../data/contact';
@@ -12,7 +13,7 @@ const year = new Date().getFullYear();
   <p class="footer__copy">{footer.copyright(year)}</p>
   {
     resume.href ? (
-      <a class="footer__link" href={resume.href} download={resume.fileName}>
+      <a class="footer__link" href={resume.href} download={resume.fileName} target="_blank" rel="noopener">
         <Icon name="download-line" size={16} />
         {footer.downloadLabel}
       </a>

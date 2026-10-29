@@ -76,7 +76,13 @@ const socialIcons = {
       }
       {
         resume.href && (
-          <a class="contact__download" href={resume.href} download={resume.fileName}>
+          <a
+            class="contact__download"
+            href={resume.href}
+            download={resume.fileName}
+            target="_blank"
+            rel="noopener"
+          >
             <Icon name="download-line" size={16} />
             {resume.downloadLabel}
           </a>

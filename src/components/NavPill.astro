@@ -57,6 +57,7 @@ const sizerLabels = [
       resume.href ? (
         <a href={resume.href} target="_blank" rel="noopener">
           {resume.pillLabel}
+          <span class="visually-hidden"> (PDF, opens in a new tab)</span>
         </a>
       ) : (
         <Placeholder name="resume" />

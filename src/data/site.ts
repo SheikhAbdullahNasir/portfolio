@@ -29,8 +29,9 @@ export interface Resume {
 }
 
 export const resume: Resume = {
-  // href: '/Abdullah-Bin-Nasir-Resume.pdf', once the PDF is in public/.
-  fileName: 'Abdullah-Bin-Nasir-Resume.pdf',
+  // The file in public/, used as Abdullah added it (2026-10-29).
+  href: '/Abdullah_Bin_Nasir_Resume.pdf',
+  fileName: 'Abdullah_Bin_Nasir_Resume.pdf',
   pillLabel: 'Resume',
   label: 'Resume (PDF)',
   downloadLabel: 'Download PDF',

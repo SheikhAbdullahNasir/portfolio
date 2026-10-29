@@ -44,7 +44,7 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - Headline: "A voice agent that handles patient intake over the phone." (Claude's draft; Abdullah to confirm or rewrite)
 - Summary: "A patient calls and talks to Maya, an AI voice coordinator, who registers them or updates their record. The backend checks details like phone, date of birth, and zip before anything is saved."
 - Mobile summary: "Callers talk to Maya, who registers or updates their record. 47 tests passing."
-- Why: [Why I built it, in your words]
+- Why: "A personal project to explore voice AI with real backend validation." (Abdullah 2026-10-29)
 - Facts: "47 tests passing", "Vapi voice pipeline", "FastAPI + Supabase"
 - Stack: Python, FastAPI, PostgreSQL (Supabase), SQLAlchemy, Vapi (confirmed by Abdullah 2026-10-29)
 - Links: none for now. The repo is private, so the card shows no GitHub button and no placeholder (Abdullah 2026-10-29); add the link when it goes public. No live demo and no phone number on the site.
@@ -109,7 +109,7 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - GitHub: https://github.com/SheikhAbdullahNasir (handle "SheikhAbdullahNasir")
 - X: https://x.com/techyAbdullah (handle "@techyAbdullah")
 - Instagram: https://www.instagram.com/abdullah.ai__/ (handle "@abdullah.ai__")
-- Résumé: [Resume PDF not provided yet]. File name when provided: `Abdullah-Bin-Nasir-Resume.pdf`. Opens in a new tab; small "Download PDF" link.
+- Résumé: `public/Abdullah_Bin_Nasir_Resume.pdf` (added by Abdullah 2026-10-29, used as is). Linked from the pill, the menu, the contact tile, and the footer. Opens in a new tab; the small "Download PDF" link (contact) and "Download resume PDF" (footer) download it.
 
 ## Footer
 - "© 2026 Abdullah Bin Nasir" (use the current year)
@@ -128,8 +128,7 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - Title and description for search and link previews: the site name and the site description above.
 
 ## Still missing (show as placeholders)
-- Résumé PDF.
-- Patient Voice Agent "why" line.
+- Nothing. Every placeholder is filled (2026-10-29).
 
 ## Open notes (not shown on the site)
 - Patient Voice Agent: headline confirmation, diagram check against its repo, dashboard status, GitHub link once the repo is public.
