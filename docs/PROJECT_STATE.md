@@ -77,7 +77,8 @@ Report: with Chrome DevTools emulating `prefers-reduced-motion: reduce`, the car
 - Hardening shipped anyway: the explicit `reduce` block with `!important` overrides (so even an animation that keeps running is overridden), and the fallback script now clears its inline values and listens for the setting changing.
 - Real bug found while checking the fallback: `--covered` was registered with `inherits: false`, so the dim layer (`::after`) never got the value and the fallback only scaled, never darkened. Now `inherits: true`.
 - Checked (built site, by editing the media rules in the CSSOM to match or not): reduce block active while the animation rule is still active: 0 running animations, scale `none`, dim 0. Fallback forced on (animation rule removed, `data-stack-fallback` set): `--covered` 0.5 gives scale 0.97 and dim 0.15, 1 gives 0.94 and 0.30; with the reduce block active: scale `none`, dim 0. `npx astro check` 0 errors; build passes.
-- Not checked: the real DevTools emulation, and the script's live `change` listener (needs a real media change; logic reviewed only).
+- Confirmed by Abdullah (2026-10-29): after the deploy, with reduced motion emulated in Chrome DevTools, the cards stack with no scale or dim. The original cause stays unconfirmed.
+- Not checked: the script's live `change` listener (needs a real media change in a browser without scroll-driven animations; logic reviewed only).
 
 ## Verified (milestone 3)
 Checked in the built site (`npm run preview`; another session's dev server was holding the folder) in the in-app browser.
