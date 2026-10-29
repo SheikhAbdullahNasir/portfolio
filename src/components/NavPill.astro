@@ -4,12 +4,22 @@
 import Placeholder from './Placeholder.astro';
 import { site, resume } from '../data/site';
 import { topLabel, navSections } from '../data/nav';
-import { getProjects } from '../lib/projects';
+import { getProjects, projectNumber } from '../lib/projects';
 
 const projectCount = (await getProjects()).length;
 const sectionLabels = JSON.stringify(
   Object.fromEntries([['top', topLabel], ...navSections.map((s) => [s.id, s.label])]),
 );
+
+// Every label the pill can show, with the counter where it appears. Rendered invisibly
+// in the same grid cell as the live label, so on desktop the pill is exactly as wide as
+// the longest one: it never jumps and has no dead space.
+const counterSample =
+  projectCount > 0 ? `${projectNumber(projectCount - 1)} / ${projectNumber(projectCount - 1)}` : '';
+const sizerLabels = [
+  { text: topLabel, counter: '' },
+  ...navSections.map((s) => ({ text: s.label, counter: s.id === 'work' ? counterSample : '' })),
+];
 ---
 
 <nav
@@ -24,8 +34,18 @@ const sectionLabels = JSON.stringify(
   </a>
 
   <p class="pill__label">
-    <span class="pill__section" data-nav-label>{topLabel}</span>
-    <span class="pill__counter" data-nav-counter hidden></span>
+    <span class="pill__line">
+      <span class="pill__section" data-nav-label>{topLabel}</span>
+      <span class="pill__counter" data-nav-counter hidden></span>
+    </span>
+    {
+      sizerLabels.map(({ text, counter }) => (
+        <span class="pill__line pill__sizer" aria-hidden="true">
+          <span class="pill__section">{text}</span>
+          {counter && <span class="pill__counter">{counter}</span>}
+        </span>
+      ))
+    }
   </p>
 
   <span class="pill__divider" aria-hidden="true"></span>
@@ -89,12 +109,24 @@ const sectionLabels = JSON.stringify(
   .pill__label {
     flex: 1;
     min-width: 0;
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
+    display: grid;
     font-weight: var(--weight-medium);
     font-size: 0.9375rem;
     white-space: nowrap;
+  }
+
+  .pill__line {
+    grid-area: 1 / 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  /* Width sizers, desktop only. On mobile the label fills the space and truncates. */
+  .pill__sizer {
+    display: none;
+    visibility: hidden;
   }
 
   .pill__section {
@@ -159,10 +191,13 @@ const sectionLabels = JSON.stringify(
       max-width: calc(100vw - 24px);
     }
 
-    /* Fixed width so the centered pill does not jump as the label changes. */
     .pill__label {
       flex: none;
-      width: 13rem;
+      padding-right: 8px;
+    }
+
+    .pill__sizer {
+      display: flex;
     }
 
     .pill__divider {

@@ -3,7 +3,7 @@
 _Last updated 2026-10-29 (milestone 3 nav and hero, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 3 (nav and hero, static) is done, committed, and pushed (commit `4d02498`). Next: milestone 4 (selected work).
+Milestone 3 (nav and hero, static) is done and pushed, including Abdullah's review fixes. Next: milestone 4 (selected work).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -29,12 +29,13 @@ Milestone 3 (nav and hero, static) is done, committed, and pushed (commit `4d024
   - Dev-only review page at `/content-preview` (`src/pages/[devPage].astro`): every piece of content and every placeholder in plain form, with project cards in their colors. It only exists under `npm run dev`; the production build does not include it.
   - The home page still shows empty sections. Rendering the content there starts in milestone 3.
 - **Milestone 3 nav and hero** (commit `4d02498`, pushed):
-  - `src/components/NavPill.astro`: fixed pill (centered from 1024px, full width with 12px margins below). "A" monogram links to `#top`, label shows "Abdullah Bin Nasir" in the hero and the section name after that, divider and Résumé on desktop only, accent Menu button. The label uses `IntersectionObserver` on a thin band 40% down the viewport; reaching the page end (footer in view) counts as the last section, so Contact still shows when it is too short to reach the band. Label width is fixed on desktop so the centered pill does not jump.
+  - `src/components/NavPill.astro`: fixed pill (centered from 1024px, full width with 12px margins below). "A" monogram links to `#top`, label shows "Abdullah Bin Nasir" in the hero and the section name after that, divider and Résumé on desktop only, accent Menu button. The label uses `IntersectionObserver` on a thin band 40% down the viewport; reaching the page end (footer in view) counts as the last section, so Contact still shows when it is too short to reach the band. On desktop the label is exactly as wide as the longest label it can show (every label is rendered invisibly in the same grid cell, including "Selected work" with a sample counter), so the pill never jumps and has no dead space. Labels come from `nav.ts`, so the width follows copy changes on its own.
   - Project counter ("01 / 02") is wired but has nothing to count yet: milestone 4 cards opt in with `data-nav-project="01"` inside `#work`. The total comes from `getProjects()`.
   - `src/components/MenuOverlay.astro`: full-screen modal `<dialog>` with numbered section links, Résumé, and email. Esc closes (native), Tab and Shift+Tab wrap inside the menu, focus returns to the Menu button on close, `aria-expanded` stays in sync, page scroll is locked while open. Choosing a section link closes the menu and moves focus to that section (sections have `tabindex="-1"`), so the next Tab continues from there; see DECISIONS #23.
   - The Menu button only shows when JavaScript runs (an inline script adds a `js` class to `<html>`). Without JavaScript the page still reads and scrolls.
   - Résumé has no PDF yet, so the pill (desktop) and the menu show the "[Resume PDF not provided yet]" placeholder. Adding `href` in `src/data/site.ts` turns both into links.
   - `src/components/Hero.astro`: label, huge name, one-liner, status line with accent dot, See work and Get in touch buttons, all from `src/data/hero.ts`. The `<h1>` reads "Abdullah Bin Nasir" to screen readers (the rest of the name is visually hidden). An empty, `aria-hidden` object slot (`data-hero-object`) holds the globe's place: right side on desktop, behind the text and off the right edge on mobile. No globe, glow, melt, or globe caption yet (milestone 6).
+  - Review fixes (Abdullah, 2026-10-29): the one-liner fits one line on desktop and uses `text-wrap: balance` on mobile; on mobile the hero text starts in the upper middle of the screen (top padding `--nav-offset` + 10svh) instead of the bottom; the pill label sizing above.
   - New token `--nav-offset` (88px); `html` has `scroll-padding-top` so anchor links land below the pill, and `scrollbar-gutter: stable` so locking scroll does not shift the layout.
   - Shipped JavaScript: about 2 KB raw, under 1 KB gzipped (inline; nav label and menu).
 
@@ -46,6 +47,11 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 - Keyboard only: Tab order is skip link, monogram, Menu, See work, Get in touch. Enter on Menu opens it with focus on Close; Tab cycles Close, five links, email, back to Close; Shift+Tab wraps the other way. Esc closes, focus returns to Menu with a visible ring, `aria-expanded` back to false, scroll unlocked. Enter on Contact closes the menu, scrolls to `#contact`, and focuses it. The Close button by mouse also returns focus to Menu.
 - No console errors. No em dashes in `src/`.
 - Not checked: the counter (no project cards yet), real phones, screen readers (only the accessibility tree was inspected), and the menu open fade under reduced motion (the global reduced-motion rule should cut it to near zero).
+
+## Verified (milestone 3 review fixes)
+- `npx astro check` 0 errors; build passes.
+- 1440px: one-liner on one line (46px tall at 40px font). Pill 613px wide for every label (was 646px); label area 166px, set by "Selected work 02 / 02"; the next longest is "Abdullah Bin Nasir" at 130px.
+- 390px x 800px: hero text runs from 168px to 528px; one-liner balanced over two lines ("I build products / with AI, end to end."); no horizontal scroll; pill unchanged (full width, label truncates if needed).
 
 ## Verified (milestone 2)
 - `npx astro check`: 0 errors, 0 warnings, 0 hints (17 files).

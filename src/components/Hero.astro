@@ -34,11 +34,11 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
   .hero {
     position: relative;
     display: grid;
-    align-items: end;
+    align-items: start;
     min-height: 100svh;
     max-width: var(--content-max);
     margin-inline: auto;
-    padding: calc(var(--nav-offset) + 24px) var(--gutter) 64px;
+    padding: calc(var(--nav-offset) + 10svh) var(--gutter) 64px;
     overflow: hidden;
   }
 
@@ -80,6 +80,7 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
 
   .hero__one-liner {
     max-width: 22ch;
+    text-wrap: balance;
     font-family: var(--font-display);
     font-weight: var(--weight-bold);
     font-size: clamp(1.5rem, 3.4vw, 2.5rem);
@@ -147,7 +148,12 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
   @media (min-width: 1024px) {
     .hero {
       align-items: center;
+      padding-top: calc(var(--nav-offset) + 24px);
       padding-bottom: 96px;
+    }
+
+    .hero__one-liner {
+      max-width: none;
     }
 
     .hero__object {
