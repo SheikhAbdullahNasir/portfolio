@@ -7,6 +7,7 @@ export const beyond = {
 
   cricket: {
     label: 'Cricket',
+    moreLabel: 'More about cricket',
     title: 'Every Pakistan match, start to finish.',
     text: "I've watched for as long as I can remember. I don't get to play much anymore, but if the team is on, I'm watching, even on a second screen while I work.",
     reveal: 'World Cup season is the one time my calendar gets negotiable.',
@@ -16,6 +17,7 @@ export const beyond = {
   gaming: {
     header: ['PLAYER 01', 'ONLINE · WEEKENDS'],
     title: 'Gaming and esports',
+    moreLabel: 'More about gaming',
     list: [
       { term: 'Plays', value: 'PUBG Mobile, Tekken 8' },
       { term: 'Squad', value: 'Online friends' },

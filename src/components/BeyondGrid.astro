@@ -1,0 +1,100 @@
+---
+// Beyond the code: themed bento. Desktop: 12 columns, Cricket (7) + Gaming (5),
+// then Events (5) + Reading (7). One column below 1024px.
+// Mouse: hover opens a card. Touch: a tap anywhere on a card toggles it.
+// Keyboard: the "+" toggle on cards with a reveal line.
+import '../styles/beyond.css';
+import CricketCard from './beyond/CricketCard.astro';
+import GamingCard from './beyond/GamingCard.astro';
+import EventPassCard from './beyond/EventPassCard.astro';
+import ReadingCard from './beyond/ReadingCard.astro';
+import { beyond } from '../data/beyond';
+---
+
+<div class="beyond">
+  <p class="beyond__hint" aria-hidden="true">
+    <span class="beyond__hint--hover">{beyond.hint.desktop}</span>
+    <span class="beyond__hint--touch">{beyond.hint.touch}</span>
+  </p>
+  <div class="beyond__grid">
+    <div class="beyond__cell beyond__cell--wide"><CricketCard /></div>
+    <div class="beyond__cell"><GamingCard /></div>
+    <div class="beyond__cell"><EventPassCard /></div>
+    <div class="beyond__cell beyond__cell--wide"><ReadingCard /></div>
+  </div>
+</div>
+
+<script>
+  const touch = window.matchMedia('(hover: none)');
+
+  for (const card of document.querySelectorAll<HTMLElement>('[data-beyond-card]')) {
+    const toggle = card.querySelector<HTMLButtonElement>('[data-beyond-toggle]');
+
+    const setOpen = (open: boolean) => {
+      card.toggleAttribute('data-open', open);
+      toggle?.setAttribute('aria-expanded', String(open));
+    };
+
+    card.addEventListener('click', (event) => {
+      const onToggle = toggle?.contains(event.target as Node);
+      // With a mouse, hover already opens the card; only the toggle button should latch it.
+      if (onToggle || touch.matches) setOpen(!card.hasAttribute('data-open'));
+    });
+  }
+</script>
+
+<style>
+  .beyond {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .beyond__hint {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .beyond__hint--touch {
+    display: none;
+  }
+
+  @media (hover: none) {
+    .beyond__hint--hover {
+      display: none;
+    }
+
+    .beyond__hint--touch {
+      display: inline;
+    }
+  }
+
+  .beyond__grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .beyond__cell {
+    display: grid;
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .beyond__grid {
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .beyond__cell {
+      grid-column: span 5;
+    }
+
+    .beyond__cell--wide {
+      grid-column: span 7;
+    }
+  }
+</style>

@@ -1,0 +1,24 @@
+---
+// Round "+" button that opens a Beyond the code card's reveal line.
+// Styles live in src/styles/beyond.css; BeyondGrid's script handles the click.
+import Icon from '../Icon.astro';
+
+interface Props {
+  /** Id of the reveal element this button shows. */
+  controls: string;
+  label: string;
+}
+
+const { controls, label } = Astro.props;
+---
+
+<button
+  class="beyond-toggle"
+  type="button"
+  aria-expanded="false"
+  aria-controls={controls}
+  aria-label={label}
+  data-beyond-toggle
+>
+  <Icon name="add-line" size={22} />
+</button>

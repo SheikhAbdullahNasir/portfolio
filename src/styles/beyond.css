@@ -1,0 +1,125 @@
+/*
+ * Shared frame for the Beyond the code cards: radius, padding, label, chips,
+ * the reveal line and its toggle. Each card adds its own theme in its component.
+ * A card is "open" on hover (mouse) or when [data-open] is set (tap or toggle).
+ */
+.beyond-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 28px;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.beyond-card h3 {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.beyond-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.beyond-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.beyond-chips li {
+  padding: 6px 12px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+/* Reveal line: collapsed until the card opens. Stays in the accessibility tree. */
+.beyond-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.beyond-reveal > * {
+  overflow: hidden;
+  padding-right: 56px; /* clear of the toggle */
+}
+
+.beyond-reveal p {
+  padding-top: 4px;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: var(--weight-bold);
+  line-height: 1.3;
+}
+
+.beyond-card[data-open] .beyond-reveal {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .beyond-card:hover .beyond-reveal {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+/* Desktop grid: keep the line's space so hovering never shifts the row below. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .beyond-reveal {
+    grid-template-rows: 1fr;
+  }
+}
+
+/* Without JavaScript, touch screens cannot open a card, so show the reveal. */
+@media (hover: none) {
+  html:not(.js) .beyond-reveal {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+.beyond-toggle {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  place-items: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+html:not(.js) .beyond-toggle {
+  display: none;
+}
+
+.beyond-toggle svg {
+  transition: transform 0.25s ease;
+}
+
+.beyond-toggle[aria-expanded='true'] svg {
+  transform: rotate(45deg);
+}

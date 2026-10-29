@@ -1,0 +1,181 @@
+---
+// Gaming: dark navy card with violet corner brackets, a player header, a drawn
+// controller, and a short list. Opening brightens the border and adds a glow.
+// Drawn shapes only, no game art or logos.
+import BeyondToggle from './BeyondToggle.astro';
+import { beyond } from '../../data/beyond';
+
+const card = beyond.gaming;
+const revealId = 'beyond-gaming-reveal';
+---
+
+<article class="beyond-card gaming" aria-labelledby="beyond-gaming-title" data-beyond-card>
+  <span class="gaming__bracket gaming__bracket--tl" aria-hidden="true"></span>
+  <span class="gaming__bracket gaming__bracket--tr" aria-hidden="true"></span>
+  <span class="gaming__bracket gaming__bracket--bl" aria-hidden="true"></span>
+  <span class="gaming__bracket gaming__bracket--br" aria-hidden="true"></span>
+
+  <div class="gaming__header beyond-label">
+    <span>{card.header[0]}</span>
+    <span class="gaming__online"><span class="gaming__dot" aria-hidden="true"></span>{card.header[1]}</span>
+  </div>
+
+  <svg class="gaming__controller" viewBox="0 0 120 72" aria-hidden="true" focusable="false">
+    <path
+      class="gaming__body"
+      d="M30 8 H90 C106 8 114 22 117 40 C120 58 112 68 102 66 C94 64 88 54 80 50 H40 C32 54 26 64 18 66 C8 68 0 58 3 40 C6 22 14 8 30 8 Z"
+    />
+    <path class="gaming__dpad" d="M24 31 h6 v-6 h6 v6 h6 v6 h-6 v6 h-6 v-6 h-6 Z" />
+    <circle class="gaming__btn" cx="88" cy="26" r="4" />
+    <circle class="gaming__btn" cx="96" cy="34" r="4" />
+    <circle class="gaming__btn" cx="80" cy="34" r="4" />
+    <circle class="gaming__btn" cx="88" cy="42" r="4" />
+    <circle class="gaming__stick" cx="48" cy="46" r="6" />
+    <circle class="gaming__stick" cx="72" cy="46" r="6" />
+  </svg>
+
+  <h3 id="beyond-gaming-title">{card.title}</h3>
+  <dl class="gaming__list">
+    {
+      card.list.map((row) => (
+        <div class="gaming__row">
+          <dt>{row.term}</dt>
+          <dd>{row.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+  <div class="beyond-reveal" id={revealId}>
+    <div><p>{card.reveal}</p></div>
+  </div>
+  <BeyondToggle controls={revealId} label={card.moreLabel} />
+</article>
+
+<style>
+  .gaming {
+    border: 1px solid rgba(169, 139, 255, 0.25);
+    background: var(--gaming-bg);
+    color: var(--gaming-ink);
+    transition:
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .gaming[data-open] {
+    border-color: var(--gaming-violet);
+    box-shadow:
+      0 0 0 1px var(--gaming-violet),
+      0 0 40px rgba(169, 139, 255, 0.28);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .gaming:hover {
+      border-color: var(--gaming-violet);
+      box-shadow:
+        0 0 0 1px var(--gaming-violet),
+        0 0 40px rgba(169, 139, 255, 0.28);
+    }
+  }
+
+  .gaming__bracket {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 0 solid var(--gaming-violet);
+  }
+
+  .gaming__bracket--tl {
+    top: 12px;
+    left: 12px;
+    border-width: 2px 0 0 2px;
+  }
+
+  .gaming__bracket--tr {
+    top: 12px;
+    right: 12px;
+    border-width: 2px 2px 0 0;
+  }
+
+  .gaming__bracket--bl {
+    bottom: 12px;
+    left: 12px;
+    border-width: 0 0 2px 2px;
+  }
+
+  .gaming__bracket--br {
+    right: 12px;
+    bottom: 12px;
+    border-width: 0 2px 2px 0;
+  }
+
+  .gaming__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--gaming-muted);
+  }
+
+  .gaming__online {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .gaming__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #6ee7a8;
+  }
+
+  .gaming__controller {
+    width: 120px;
+    height: auto;
+    margin: 6px 0 4px;
+  }
+
+  .gaming__body {
+    fill: none;
+    stroke: var(--gaming-violet);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+  }
+
+  .gaming__dpad,
+  .gaming__btn {
+    fill: var(--gaming-violet);
+  }
+
+  .gaming__stick {
+    fill: none;
+    stroke: var(--gaming-muted);
+    stroke-width: 2;
+  }
+
+  .gaming__list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .gaming__row {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(174, 179, 214, 0.25);
+  }
+
+  .gaming__row dt {
+    color: var(--gaming-muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .gaming__row dd {
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,127 @@
+---
+// Cricket: deep green card, a drawn pitch seen from above (creases and stumps)
+// and a red ball that spins while the card is open. Drawn shapes only, no crests.
+import BeyondToggle from './BeyondToggle.astro';
+import { beyond } from '../../data/beyond';
+
+const card = beyond.cricket;
+const revealId = 'beyond-cricket-reveal';
+---
+
+<article class="beyond-card cricket" aria-labelledby="beyond-cricket-title" data-beyond-card>
+  <svg class="cricket__pitch" viewBox="0 0 600 132" aria-hidden="true" focusable="false">
+    <rect class="cricket__grass" x="0" y="0" width="600" height="132" rx="14" />
+    <rect class="cricket__stripe" x="0" y="0" width="150" height="132" rx="14" />
+    <rect class="cricket__stripe" x="300" y="0" width="150" height="132" />
+    <rect class="cricket__strip" x="56" y="34" width="488" height="64" rx="3" />
+    <g class="cricket__crease">
+      <line x1="92" y1="28" x2="92" y2="104" />
+      <line x1="508" y1="28" x2="508" y2="104" />
+      <line x1="72" y1="40" x2="72" y2="92" />
+      <line x1="528" y1="40" x2="528" y2="92" />
+      <line x1="64" y1="44" x2="92" y2="44" />
+      <line x1="64" y1="88" x2="92" y2="88" />
+      <line x1="508" y1="44" x2="536" y2="44" />
+      <line x1="508" y1="88" x2="536" y2="88" />
+    </g>
+    <g class="cricket__stumps">
+      <circle cx="72" cy="58" r="3.5" />
+      <circle cx="72" cy="66" r="3.5" />
+      <circle cx="72" cy="74" r="3.5" />
+      <circle cx="528" cy="58" r="3.5" />
+      <circle cx="528" cy="66" r="3.5" />
+      <circle cx="528" cy="74" r="3.5" />
+    </g>
+    <g class="cricket__ball">
+      <circle cx="356" cy="66" r="15" />
+      <path d="M346 55 Q 356 66 346 77 M366 55 Q 356 66 366 77" />
+    </g>
+  </svg>
+
+  <p class="beyond-label">{card.label}</p>
+  <h3 id="beyond-cricket-title">{card.title}</h3>
+  <p class="cricket__text">{card.text}</p>
+  <ul class="beyond-chips">{card.chips.map((chip) => <li>{chip}</li>)}</ul>
+  <div class="beyond-reveal" id={revealId}>
+    <div><p>{card.reveal}</p></div>
+  </div>
+  <BeyondToggle controls={revealId} label={card.moreLabel} />
+</article>
+
+<style>
+  .cricket {
+    background: var(--cricket-bg);
+    color: var(--cricket-ink);
+  }
+
+  .cricket .beyond-label,
+  .cricket__text,
+  .cricket .beyond-chips {
+    color: var(--cricket-muted);
+  }
+
+  .cricket__text {
+    max-width: 52ch;
+  }
+
+  .cricket__pitch {
+    width: 100%;
+    height: auto;
+    margin-bottom: 8px;
+  }
+
+  .cricket__grass {
+    fill: #1d4a35;
+  }
+
+  .cricket__stripe {
+    fill: #215239;
+  }
+
+  .cricket__strip {
+    fill: var(--cricket-pitch);
+  }
+
+  .cricket__crease {
+    stroke: #f6f1e4;
+    stroke-width: 2;
+  }
+
+  .cricket__stumps {
+    fill: #f6f1e4;
+  }
+
+  .cricket__ball circle {
+    fill: var(--cricket-ball);
+  }
+
+  .cricket__ball path {
+    fill: none;
+    stroke: #f3d9c9;
+    stroke-width: 1.5;
+    stroke-dasharray: 2 2;
+  }
+
+  .cricket__ball {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cricket[data-open] .cricket__ball {
+      animation: cricket-spin 0.9s linear infinite;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .cricket:hover .cricket__ball {
+        animation: cricket-spin 0.9s linear infinite;
+      }
+    }
+  }
+
+  @keyframes cricket-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+</style>

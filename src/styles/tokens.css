@@ -32,6 +32,29 @@
   --card-plum-ink: #f1e6f4;
   --card-plum-muted: #cdb4d4;
 
+  /* Beyond the code: one theme per card */
+  --cricket-bg: #143326;
+  --cricket-ink: #e9f3ec;
+  --cricket-muted: #b3d0bf;
+  --cricket-pitch: #c9b88a;
+  --cricket-ball: #c8322f;
+
+  --gaming-bg: #11162b;
+  --gaming-ink: #e8eaf7;
+  --gaming-muted: #aeb3d6;
+  --gaming-violet: #a98bff;
+
+  --pass-bg: #efe7d6;
+  --pass-ink: #1d1b17;
+  --pass-muted: #5b554a;
+  --pass-header: #1d1b17;
+
+  --reading-bg: #3a2619;
+  --reading-ink: #f5ebe0;
+  --reading-muted: #d6bfa9;
+  --reading-cover: #7a3b2a;
+  --reading-pages: #efe4cf;
+
   /* Fonts (provisional: see docs/PROJECT_STATE.md open questions) */
   --font-display: 'Bricolage Grotesque Variable', 'Arial Narrow', system-ui, sans-serif;
   --font-text: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;

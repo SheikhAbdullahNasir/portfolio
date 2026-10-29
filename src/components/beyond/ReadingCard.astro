@@ -1,0 +1,150 @@
+---
+// Reading: warm brown card with a drawn book. The cover is an illustration with
+// the title text, never the real cover. Opening the card swings the cover open
+// a little. No text reveal here, so there is no toggle; a tap on touch screens opens it.
+import { beyond } from '../../data/beyond';
+
+const card = beyond.reading;
+---
+
+<article class="beyond-card reading" aria-labelledby="beyond-reading-title" data-beyond-card>
+  <div class="reading__text">
+    <p class="beyond-label">{card.label}</p>
+    <h3 id="beyond-reading-title">{card.title}</h3>
+    <p class="reading__muted">{card.text}</p>
+  </div>
+
+  <div class="reading__book" aria-hidden="true">
+    <div class="reading__pages">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="reading__cover">
+      <span class="reading__moon"></span>
+      <span class="reading__title">{card.book.title}</span>
+      <span class="reading__author">{card.book.author}</span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .reading {
+    display: grid;
+    gap: 28px;
+    background: var(--reading-bg);
+    color: var(--reading-ink);
+  }
+
+  .reading__text {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .reading .beyond-label,
+  .reading__muted {
+    color: var(--reading-muted);
+  }
+
+  .reading__muted {
+    max-width: 48ch;
+  }
+
+  .reading__book {
+    position: relative;
+    justify-self: center;
+    width: 150px;
+    height: 206px;
+    perspective: 900px;
+  }
+
+  .reading__pages {
+    position: absolute;
+    inset: 4px 0 4px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 34px 18px 0 22px;
+    border-radius: 2px 6px 6px 2px;
+    background: var(--reading-pages);
+    box-shadow:
+      3px 0 0 #d9ccb2,
+      6px 0 0 #c9baa0;
+  }
+
+  .reading__pages span {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(58, 38, 25, 0.25);
+  }
+
+  .reading__pages span:nth-child(3n) {
+    width: 70%;
+  }
+
+  .reading__cover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 30px 14px 14px 20px;
+    border-radius: 3px 8px 8px 3px;
+    background: var(--reading-cover);
+    box-shadow:
+      inset 6px 0 0 rgba(0, 0, 0, 0.22),
+      0 10px 24px rgba(0, 0, 0, 0.35);
+    color: #f6e9dc;
+    text-align: center;
+    transform-origin: left center;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .reading__moon {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background: #f2c98a;
+    box-shadow: 8px -4px 0 0 var(--reading-cover) inset;
+  }
+
+  .reading__title {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: var(--weight-bold);
+    line-height: 1.1;
+  }
+
+  .reading__author {
+    margin-top: auto;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .reading[data-open] .reading__cover {
+      transform: rotateY(-32deg);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .reading:hover .reading__cover {
+        transform: rotateY(-32deg);
+      }
+    }
+  }
+
+  @media (min-width: 640px) {
+    .reading {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+
+    .reading__book {
+      margin-right: 24px;
+    }
+  }
+</style>

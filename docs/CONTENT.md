@@ -73,6 +73,7 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 ## Beyond the code
 - Heading: "Beyond the code"
 - Desktop hint: "Hover a card". Mobile hint: "Tap a card".
+- Screen-reader names for the reveal buttons (added in milestone 5): "More about cricket", "More about gaming".
 
 ### Cricket
 - Label: "Cricket"

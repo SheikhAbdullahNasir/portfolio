@@ -1,0 +1,154 @@
+---
+// Events: a cream event pass with a dark header, lanyard slot, attendee name,
+// dashed tear line, and one sticker per event type. Opening tilts the stickers.
+// No text reveal here, so there is no toggle; a tap on touch screens opens it.
+import { beyond } from '../../data/beyond';
+
+const card = beyond.events;
+const stickerColors = ['#8fb3ff', '#f2b64a', '#f08a7e', '#7fd3a8'];
+---
+
+<article class="beyond-card pass" aria-labelledby="beyond-pass-name" data-beyond-card>
+  <div class="pass__header">
+    <span class="pass__slot" aria-hidden="true"></span>
+    <span class="beyond-label">{card.header}</span>
+    <span class="pass__tag">{card.passLabel}</span>
+  </div>
+
+  <div class="pass__body">
+    <p class="beyond-label pass__muted">{card.attendeeLabel}</p>
+    <h3 id="beyond-pass-name">{card.attendeeName}</h3>
+    <p class="pass__text pass__muted">{card.text}</p>
+  </div>
+
+  <div class="pass__tear" aria-hidden="true"></div>
+
+  <ul class="pass__stickers">
+    {
+      card.stickers.map((sticker, i) => (
+        <li style={`--sticker: ${stickerColors[i % stickerColors.length]}; --tilt: ${i % 2 ? 3 : -3}deg`}>
+          {sticker}
+        </li>
+      ))
+    }
+  </ul>
+</article>
+
+<style>
+  .pass {
+    gap: 0;
+    padding: 0;
+    background: var(--pass-bg);
+    color: var(--pass-ink);
+  }
+
+  .pass__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    background: var(--pass-header);
+    color: var(--pass-bg);
+  }
+
+  .pass__slot {
+    flex: none;
+    width: 34px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--bg);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+  }
+
+  .pass__tag {
+    margin-left: auto;
+    padding: 4px 10px;
+    border: 1px solid currentColor;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.14em;
+  }
+
+  .pass__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px 24px 20px;
+  }
+
+  .pass__muted {
+    color: var(--pass-muted);
+  }
+
+  .pass__text {
+    max-width: 46ch;
+  }
+
+  /* Dashed tear line with a half-circle notch cut into each edge. */
+  .pass__tear {
+    position: relative;
+    height: 2px;
+    margin: 0 24px;
+    background: repeating-linear-gradient(
+      to right,
+      var(--pass-muted) 0 8px,
+      transparent 8px 14px
+    );
+  }
+
+  .pass__tear::before,
+  .pass__tear::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg);
+    transform: translateY(-50%);
+  }
+
+  .pass__tear::before {
+    left: -35px;
+  }
+
+  .pass__tear::after {
+    right: -35px;
+  }
+
+  .pass__stickers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 22px 24px 26px;
+    list-style: none;
+  }
+
+  .pass__stickers li {
+    padding: 7px 14px;
+    border-radius: 10px;
+    background: var(--sticker);
+    color: var(--pass-ink);
+    font-size: 0.875rem;
+    font-weight: var(--weight-semibold);
+    box-shadow: 0 2px 0 rgba(29, 27, 23, 0.18);
+    transform: rotate(var(--tilt));
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Reduced motion: stickers keep their resting tilt. */
+  @media (prefers-reduced-motion: no-preference) {
+    .pass[data-open] .pass__stickers li {
+      transform: rotate(calc(var(--tilt) * -2.5)) translateY(-2px);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .pass:hover .pass__stickers li {
+        transform: rotate(calc(var(--tilt) * -2.5)) translateY(-2px);
+      }
+    }
+  }
+</style>

@@ -1,0 +1,401 @@
+---
+// Contact: headline, sub-line, the email as big text with a copy button, icon
+// tiles for socials, and the résumé tile in the accent color. Brand icons come
+// from Remix Icon through Icon.astro. Tiles pull slightly toward a mouse pointer.
+import Icon from './Icon.astro';
+import Placeholder from './Placeholder.astro';
+import { contact } from '../data/contact';
+import { resume } from '../data/site';
+
+const socialIcons = {
+  linkedin: 'linkedin-fill',
+  github: 'github-fill',
+  x: 'twitter-x-fill',
+  instagram: 'instagram-line',
+} as const;
+---
+
+<div class="contact">
+  <p class="contact__headline">{contact.headline}</p>
+  <p class="contact__sub">{contact.subLine}</p>
+
+  <div class="contact__email-row">
+    <a class="contact__email" href={`mailto:${contact.email}`}>{contact.email}</a>
+    <button class="contact__copy" type="button" data-copy-email={contact.email}
+      data-copied-label={contact.copiedLabel}
+    >
+      <Icon name="file-copy-line" size={18} class="contact__copy-icon" />
+      <Icon name="check-line" size={18} class="contact__check-icon" />
+      <span data-copy-label>{contact.copyLabel}</span>
+    </button>
+    <span class="visually-hidden" role="status" data-copy-status></span>
+  </div>
+
+  <ul class="contact__tiles">
+    {
+      contact.socials.map((social) => (
+        <li>
+          <a class="tile" href={social.href} target="_blank" rel="noopener" data-magnetic>
+            <span class="tile__icon">
+              <Icon name={socialIcons[social.icon]} size={18} />
+            </span>
+            <span class="tile__text">
+              <span class="tile__name">{social.name}</span>
+              <span class="tile__handle">{social.handle}</span>
+            </span>
+            <Icon name="arrow-right-up-line" size={20} class="tile__arrow" />
+            <span class="visually-hidden">(opens in a new tab)</span>
+          </a>
+        </li>
+      ))
+    }
+    <li class="contact__resume">
+      {
+        resume.href ? (
+          <a class="tile tile--accent" href={resume.href} target="_blank" rel="noopener" data-magnetic>
+            <span class="tile__icon">
+              <Icon name="file-text-line" size={18} />
+            </span>
+            <span class="tile__text">
+              <span class="tile__name">{resume.label}</span>
+            </span>
+            <Icon name="arrow-right-up-line" size={20} class="tile__arrow" />
+            <span class="visually-hidden">(opens in a new tab)</span>
+          </a>
+        ) : (
+          <div class="tile tile--accent tile--pending">
+            <span class="tile__icon">
+              <Icon name="file-text-line" size={18} />
+            </span>
+            <span class="tile__text">
+              <span class="tile__name">{resume.label}</span>
+              <Placeholder name="resume" />
+            </span>
+          </div>
+        )
+      }
+      {
+        resume.href && (
+          <a class="contact__download" href={resume.href} download={resume.fileName}>
+            <Icon name="download-line" size={16} />
+            {resume.downloadLabel}
+          </a>
+        )
+      }
+    </li>
+  </ul>
+</div>
+
+<script>
+  // Clipboard API first; the older execCommand path covers browsers or frames that deny it.
+  async function copyText(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.append(area);
+      area.select();
+      const copied = document.execCommand('copy');
+      area.remove();
+      return copied;
+    }
+  }
+
+  // Copy email: swap the label to "Copied" for a moment and announce it. If copying
+  // is blocked entirely, select the email so it can be copied by hand.
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy-email]')) {
+    const label = button.querySelector<HTMLElement>('[data-copy-label]');
+    const status = button.parentElement?.querySelector<HTMLElement>('[data-copy-status]');
+    const emailLink = button.parentElement?.querySelector('a');
+    const idleText = label?.textContent ?? '';
+    const copiedText = button.dataset.copiedLabel ?? '';
+    let timer: number | undefined;
+
+    button.addEventListener('click', async () => {
+      const email = button.dataset.copyEmail ?? '';
+      if (!(await copyText(email))) {
+        if (emailLink) window.getSelection()?.selectAllChildren(emailLink);
+        return;
+      }
+      button.dataset.copied = '';
+      if (label) label.textContent = copiedText;
+      if (status) status.textContent = copiedText;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        delete button.dataset.copied;
+        if (label) label.textContent = idleText;
+        if (status) status.textContent = '';
+      }, 2000);
+    });
+  }
+
+  // Magnetic tiles: a small pull toward the pointer, mouse only, never under reduced motion.
+  const magnetic = window.matchMedia(
+    '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+  );
+  const maxPull = 6;
+
+  for (const tile of document.querySelectorAll<HTMLElement>('[data-magnetic]')) {
+    tile.addEventListener('pointermove', (event) => {
+      if (!magnetic.matches || event.pointerType !== 'mouse') return;
+      const box = tile.getBoundingClientRect();
+      const x = (event.clientX - box.left) / box.width - 0.5;
+      const y = (event.clientY - box.top) / box.height - 0.5;
+      tile.style.setProperty('--mx', `${(x * maxPull * 2).toFixed(1)}px`);
+      tile.style.setProperty('--my', `${(y * maxPull * 2).toFixed(1)}px`);
+    });
+    tile.addEventListener('pointerleave', () => {
+      tile.style.removeProperty('--mx');
+      tile.style.removeProperty('--my');
+    });
+  }
+</script>
+
+<style>
+  .contact {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  .contact__headline {
+    max-width: 14ch;
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 9vw, 7.5rem);
+    font-weight: var(--weight-extrabold);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .contact__sub {
+    max-width: 44ch;
+    color: var(--muted);
+    font-size: 1.125rem;
+  }
+
+  .contact__email-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    margin-top: 24px;
+  }
+
+  /* The underline sweeps in from the left on hover and focus. */
+  .contact__email {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    min-height: var(--touch-target);
+    padding-bottom: 4px;
+    background: linear-gradient(var(--accent), var(--accent)) left bottom / 0% 2px no-repeat;
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 6vw, 4rem);
+    font-weight: var(--weight-bold);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    transition: background-size 0.35s ease;
+  }
+
+  .contact__email:hover,
+  .contact__email:focus-visible {
+    background-size: 100% 2px;
+  }
+
+  .contact__copy {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    min-height: var(--touch-target);
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-weight: var(--weight-medium);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+
+  /* Copying needs JavaScript; without it the mailto link still works. */
+  :global(html.js) .contact__copy {
+    display: inline-flex;
+  }
+
+  .contact__copy:hover {
+    border-color: var(--muted);
+  }
+
+  .contact__copy[data-copied] {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .contact__copy :global(.contact__check-icon),
+  .contact__copy[data-copied] :global(.contact__copy-icon) {
+    display: none;
+  }
+
+  .contact__copy[data-copied] :global(.contact__check-icon) {
+    display: block;
+  }
+
+  .contact__tiles {
+    display: grid;
+    gap: 12px;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tile {
+    --mx: 0px;
+    --my: 0px;
+    --lift: 0px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 72px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+    transform: translate(var(--mx), calc(var(--my) + var(--lift)));
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  a.tile:hover,
+  a.tile:focus-visible {
+    --lift: -3px;
+    border-color: rgba(237, 235, 229, 0.28);
+  }
+
+  .tile__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(237, 235, 229, 0.08);
+  }
+
+  .tile__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .tile__name {
+    font-weight: var(--weight-semibold);
+  }
+
+  .tile__handle {
+    overflow: hidden;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tile :global(.tile__arrow) {
+    flex: none;
+    margin-left: auto;
+    color: var(--muted);
+    transition: transform 0.2s ease;
+  }
+
+  a.tile:hover :global(.tile__arrow),
+  a.tile:focus-visible :global(.tile__arrow) {
+    transform: translate(2px, -2px);
+  }
+
+  .tile--accent {
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .tile--accent .tile__icon {
+    background: rgba(20, 20, 20, 0.12);
+  }
+
+  .tile--accent :global(.tile__arrow) {
+    color: var(--bg);
+  }
+
+  /* While the PDF is missing, the dashed placeholder sits on the accent tile. */
+  .tile--pending :global(.placeholder) {
+    margin-top: 4px;
+    border-color: var(--bg);
+    color: var(--bg);
+    font-size: 0.75rem;
+  }
+
+  .contact__resume {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact__download {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    min-height: var(--touch-target);
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .contact__download:hover {
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile,
+    a.tile:hover,
+    a.tile:focus-visible {
+      transform: none;
+    }
+
+    a.tile:hover :global(.tile__arrow),
+    a.tile:focus-visible :global(.tile__arrow) {
+      transform: none;
+    }
+  }
+
+  /* Résumé tile takes its own full-width row under the socials. */
+  @media (min-width: 640px) {
+    .contact__tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .contact__resume {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .contact__tiles {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+  }
+</style>

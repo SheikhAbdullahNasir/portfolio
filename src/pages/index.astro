@@ -2,6 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import ProjectStack from '../components/ProjectStack.astro';
+import NowCards from '../components/NowCards.astro';
+import About from '../components/About.astro';
+import BeyondGrid from '../components/BeyondGrid.astro';
+import Contact from '../components/Contact.astro';
 import { navSections } from '../data/nav';
 ---
 
@@ -20,6 +24,10 @@ import { navSections } from '../data/nav';
           {section.label}
         </h2>
         {section.id === 'work' && <ProjectStack />}
+        {section.id === 'now' && <NowCards />}
+        {section.id === 'about' && <About />}
+        {section.id === 'beyond' && <BeyondGrid />}
+        {section.id === 'contact' && <Contact />}
       </section>
     ))
   }

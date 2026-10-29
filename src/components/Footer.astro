@@ -1,0 +1,75 @@
+---
+// Footer: copyright (year at build time), résumé download, back to top.
+import Icon from './Icon.astro';
+import Placeholder from './Placeholder.astro';
+import { footer } from '../data/contact';
+import { resume } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<div class="footer">
+  <p class="footer__copy">{footer.copyright(year)}</p>
+  {
+    resume.href ? (
+      <a class="footer__link" href={resume.href} download={resume.fileName}>
+        <Icon name="download-line" size={16} />
+        {footer.downloadLabel}
+      </a>
+    ) : (
+      <span class="footer__pending">
+        {footer.downloadLabel} <Placeholder name="resume" />
+      </span>
+    )
+  }
+  <a class="footer__link" href="#top">
+    {footer.backToTopLabel}
+    <Icon name="arrow-up-line" size={16} />
+  </a>
+</div>
+
+<style>
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 28px;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: 28px var(--gutter) 36px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .footer__copy {
+    margin-right: auto;
+  }
+
+  .footer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--touch-target);
+    text-decoration: none;
+  }
+
+  .footer__link:hover {
+    color: var(--ink);
+  }
+
+  .footer__pending {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-height: var(--touch-target);
+  }
+
+  @media (max-width: 639px) {
+    .footer {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

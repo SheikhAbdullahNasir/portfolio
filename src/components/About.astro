@@ -1,0 +1,126 @@
+---
+// About: the approved paragraph beside a short timeline. No employer names,
+// dates, or photo (docs/CONTENT.md, DECISIONS #17). The timeline line draws in
+// as it scrolls into view where scroll-driven animations exist; otherwise it is
+// simply drawn.
+import { about } from '../data/about';
+
+const lastIndex = about.timeline.length - 1;
+---
+
+<div class="about">
+  <ol class="about__timeline">
+    {
+      about.timeline.map((step, i) => (
+        <li class:list={['about__step', { 'about__step--current': i === lastIndex }]}>
+          <span class="about__dot" aria-hidden="true" />
+          {step}
+        </li>
+      ))
+    }
+  </ol>
+  <p class="about__paragraph">{about.paragraph}</p>
+</div>
+
+<style>
+  .about {
+    display: grid;
+    gap: 40px;
+    margin-top: 40px;
+  }
+
+  .about__timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin: 0;
+    padding: 0 0 0 32px;
+    list-style: none;
+  }
+
+  /* The line runs from the first dot to the last. */
+  .about__timeline::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 5px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(var(--line), var(--accent));
+    transform-origin: top;
+  }
+
+  .about__step {
+    position: relative;
+    color: var(--muted);
+    font-size: 1.0625rem;
+    font-weight: var(--weight-medium);
+  }
+
+  .about__step--current {
+    color: var(--ink);
+  }
+
+  .about__dot {
+    position: absolute;
+    top: 6px;
+    left: -32px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--muted);
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  .about__step--current .about__dot {
+    border-color: var(--accent);
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(143, 179, 255, 0.18);
+  }
+
+  .about__paragraph {
+    max-width: 62ch;
+    font-size: 1.125rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 1024px) {
+    .about {
+      grid-template-columns: minmax(260px, 4fr) 8fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .about__paragraph {
+      font-size: 1.3125rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* Timeline through a custom property: the CSS minifier would otherwise fold
+         view() into the animation shorthand, where browsers reject it. */
+      .about__timeline {
+        --about-timeline: view();
+      }
+
+      .about__timeline::before {
+        animation: about-draw linear both;
+        animation-timeline: var(--about-timeline);
+        animation-range: entry 20% cover 50%;
+      }
+    }
+  }
+
+  @keyframes about-draw {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+</style>

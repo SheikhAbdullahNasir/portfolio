@@ -1,9 +1,9 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 4 review tuning, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (milestone 5, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 4 (selected work) is done and pushed, including Abdullah's review tuning. Next: milestone 5 (Now, About, Beyond the code, Contact).
+Milestone 5 (Now, About, Beyond the code, Contact, footer) is built and checked locally, committed on `main` but **not pushed**. Waiting for Abdullah's review. Next after approval: push, then milestone 6 (interactions).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -51,6 +51,33 @@ Milestone 4 (selected work) is done and pushed, including Abdullah's review tuni
   - Pill counter: cards carry `data-nav-project="01"`. `NavPill` now keeps the set of cards in the band and shows the highest number, because stacked cards overlap (the old "last one to enter" logic would stick on "02" when scrolling back up).
   - New tokens in `tokens.css`: `--stack-top`, `--stack-peek`, `--stack-gap`, `--stack-bottom`, `--stack-dwell`, `--stack-max-height`, `--stack-scale`, `--stack-dim`.
   - Shipped JavaScript is now about 3 KB raw, 1.3 KB gzipped (all inline).
+- **Milestone 5 Now, About, Beyond the code, Contact** (committed, not pushed; waiting for review):
+  - `src/components/Icon.astro`: inline SVG icons from Remix Icon (`@iconify-json/ri`, new dev dependency, DECISIONS #25), read at build time. Decorative unless given a `label`.
+  - `src/components/NowCards.astro`: "Last updated October 2026" line, three cards (Building, Learning, Exploring) with an accent icon each (hammer, open book, compass; `icon` field in `src/data/now.ts`). One column on mobile, three from 768px.
+  - `src/components/About.astro`: timeline (three steps, the last one in the accent) beside the approved paragraph on desktop, stacked on mobile. The timeline line draws in on scroll with a CSS view timeline, only under `prefers-reduced-motion: no-preference`; otherwise it is simply drawn. No photo and no personal touch (still open).
+  - Beyond the code, `src/components/BeyondGrid.astro` plus `src/components/beyond/`: 12-column bento on desktop (Cricket 7 + Gaming 5, Events 5 + Reading 7), one column below 1024px. Shared frame in `src/styles/beyond.css`; theme colors as new tokens (`--cricket-*`, `--gaming-*`, `--pass-*`, `--reading-*`). All art is drawn SVG or CSS; no logos, game art, crests, or real covers.
+    - Cricket: pitch from above (grass stripes, strip, creases, stumps), red ball with a seam that spins while open; chips; reveal line.
+    - Gaming: violet corner brackets, "PLAYER 01" and "ONLINE · WEEKENDS", drawn controller, definition list; opening brightens the border and adds a glow; reveal line.
+    - Events: cream pass with a dark header (lanyard slot, "PASS"), attendee name, dashed tear line with edge notches, four colored stickers that tilt the other way when open.
+    - Reading: drawn book (title and author as text on an illustrated cover) whose cover swings open a little.
+    - Opening: hover with a mouse; a tap anywhere on the card on touch screens; a "+" button (`aria-expanded`, `aria-controls`) on Cricket and Gaming for keyboard users (DECISIONS #26). The hint reads "Hover a card" or "Tap a card" by `(hover: none)`. Without JavaScript the buttons hide and touch screens show the reveal lines.
+    - Reduced motion: ball spin, sticker tilt, and book opening only exist under `no-preference`; the reveal line still appears (its fade is cut to near zero by the global rule).
+  - `src/components/Contact.astro`: big headline and sub-line; the email as a large `mailto:` link with an accent underline that sweeps in on hover and focus; a "Copy email" button (JavaScript only) that shows "Copied" for 2 seconds and announces it through a `role="status"` region. Copy tries the Clipboard API, then `execCommand('copy')`; if both are blocked it selects the email text. Tiles for LinkedIn, GitHub, X, Instagram: brand icon in a 32px tile, name, handle, arrow, new tab with a hidden "(opens in a new tab)"; lift and arrow nudge on hover; magnetic pull up to 6px for a mouse only, never under reduced motion. The résumé tile in the accent color takes a full row under the socials; while the PDF is missing it shows the placeholder, and its "Download PDF" link appears once `href` is set. Tiles: one column, two from 640px, four from 1024px.
+  - `src/components/Footer.astro` in the base layout: copyright with the build year, "Download resume PDF" (placeholder until the PDF exists), "Back to top" (`#top`).
+  - Shipped JavaScript is now about 4.9 KB raw, 2 KB gzipped (all inline).
+
+## Verified (milestone 5)
+Checked in the built site from `dist/` in the in-app browser (Chromium). Another session's Astro preview server was holding the folder, so a throwaway static server in the scratchpad was used again (its temporary `launch.json` entry was reverted).
+- `npx astro check`: 0 errors, 0 warnings, 1 hint (`execCommand` is deprecated; kept on purpose as the copy fallback). `npm run build` passes. No console errors. No em dashes in `src/`.
+- 1440x900: Now cards three across (408px each). About in two columns. Bento rows: Cricket 730px + Gaming 515px, Events 515px + Reading 730px, no overflow inside any card. Hovering Cricket shows the reveal line and spins the ball. Contact tiles four across with the résumé tile below. Footer on one line. No horizontal scroll.
+- Found and fixed: hovering a top-row card pushed the second row down 28px; the desktop grid now keeps the reveal line's space and only fades it.
+- Found and fixed at 1024px (the pane's own width at one point): five-across contact tiles overflowed by about 250px; now four across with `minmax(0, 1fr)`.
+- Found and fixed: the CSS minifier folded `animation-timeline: view()` into the `animation` shorthand, which browsers drop, so the About line never animated; the timeline now goes through a custom property (same trick as the stack). Read back as scale 1 once the timeline is in view.
+- 390x844: everything one column, no horizontal scroll. The email at 23.4px fits one line (338px) and the link is 44px tall; copy button, tiles, toggles, and footer links are at least 44px. "Tap a card" shows. Tapping the Cricket card opens it (reveal visible, ball spinning, button `aria-expanded="true"`, "+" turns to "x"); tapping again closes it. Tapping Events tilts the stickers; tapping Reading opens the book; Gaming's button opens its reveal with the glow.
+- Keyboard: Tab from the Beyond hint lands on "More about cricket" with the focus ring; Enter opens the card and sets `aria-expanded="true"`.
+- Copy email: the in-app browser denies the Clipboard API; the fallback copied, the button showed "Copied", and the status region held "Copied".
+- Reduced motion: confirmed through the CSSOM that the spin, sticker tilt, book opening, and line draw live only inside `prefers-reduced-motion: no-preference`, and tile movement is off under `reduce`. The setting itself cannot be emulated here.
+- Not checked: real phones and laptops, screen readers (structure only), the line mid-draw (the hidden pane does not advance scroll timelines, so only the end state was read), the magnetic pull feel, the no-JavaScript view, Safari and Firefox.
 
 ## Verified (milestone 4)
 Checked in the built site served from `dist/` in the in-app browser (Chromium). Another session's Astro dev and preview servers were holding the folder, so a throwaway static server in the scratchpad was used.
@@ -114,7 +141,7 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 - Screenshot alt text was written from what the screenshots show; Abdullah may want to reword it.
 
 ## Not started
-- Milestones 5 to 8.
+- Milestones 6 to 8.
 
 ## Placeholders to fill (from Abdullah)
 Rendered on the site where marked "visible". The rest are notes in the project files.
@@ -135,8 +162,8 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah rechecks milestone 4 on the Vercel preview on his phone and laptop after the tuning. To judge: the stacking feel, the 0.94 scale and 30% dim, card height on his phone, the screenshot layering, the flow diagram look.
-2. Milestone 5: Now, About, Beyond the code, Contact.
+1. Abdullah reviews milestone 5 locally (`npm run dev`) or after a push. To judge: the Now icons, the About timeline layout, each Beyond card's drawing and colors (pitch, controller, pass, book), the hover and tap reveals, the contact sizes and tile layout (four across plus a full-width résumé tile), and the footer.
+2. Push milestone 5 once approved, then milestone 6 (interactions).
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
