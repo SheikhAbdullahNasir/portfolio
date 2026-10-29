@@ -1,0 +1,149 @@
+---
+// Flow diagram drawn in HTML and CSS (no image), for projects whose visual is
+// `type: diagram`. Steps come from the project file, top to bottom.
+interface Props {
+  steps: { title: string; detail?: string }[];
+  /** Accessible name for the list, for example "How a call flows". */
+  label: string;
+}
+
+const { steps, label } = Astro.props;
+---
+
+<ol class="flow" aria-label={label}>
+  {
+    steps.map((step, i) => (
+      <li class="flow__step">
+        <span class="flow__number" aria-hidden="true">
+          {String(i + 1).padStart(2, '0')}
+        </span>
+        <span class="flow__text">
+          <span class="flow__title">{step.title}</span>
+          {step.detail && <span class="flow__detail">{step.detail}</span>}
+        </span>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .flow {
+    --flow-link: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--flow-link);
+    height: 100%;
+    margin: 0;
+    padding: 16px;
+    list-style: none;
+    border-radius: var(--radius-card);
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0) 0 0 / 18px 18px,
+      rgba(0, 0, 0, 0.18);
+  }
+
+  .flow__step {
+    position: relative;
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    border: 1px solid color-mix(in srgb, var(--card-ink) 18%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--card-ink) 7%, transparent);
+  }
+
+  /* Arrow from the step above: a short line with a head, centered in the gap. */
+  .flow__step + .flow__step::before,
+  .flow__step + .flow__step::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .flow__step + .flow__step::before {
+    bottom: 100%;
+    width: 1px;
+    height: calc(var(--flow-link) + 1px);
+    background: var(--card-muted);
+  }
+
+  .flow__step + .flow__step::after {
+    bottom: calc(100% + 1px);
+    border: 4px solid transparent;
+    border-top-color: var(--card-muted);
+    border-bottom-width: 0;
+  }
+
+  .flow__number {
+    flex: none;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .flow__text {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .flow__title {
+    flex: none;
+    font-weight: var(--weight-semibold);
+    font-size: 0.875rem;
+  }
+
+  .flow__detail {
+    min-width: 0;
+    color: var(--card-muted);
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  /* Short phones: titles only, tighter boxes, so five steps still fit. */
+  @media (max-width: 1023px) and (max-height: 720px) {
+    .flow {
+      --flow-link: 10px;
+      padding: 10px 16px;
+    }
+
+    .flow__step {
+      padding: 4px 12px;
+    }
+
+    .flow__detail {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .flow {
+      --flow-link: 22px;
+      padding: 32px 15%;
+    }
+
+    .flow__step {
+      padding: 12px 18px;
+    }
+
+    .flow__text {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .flow__title {
+      font-size: 1rem;
+    }
+
+    .flow__detail {
+      font-size: 0.8125rem;
+    }
+  }
+</style>

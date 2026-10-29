@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import ProjectStack from '../components/ProjectStack.astro';
 import { navSections } from '../data/nav';
 ---
 
@@ -18,6 +19,7 @@ import { navSections } from '../data/nav';
         <h2 id={`${section.id}-heading`} class="section__heading">
           {section.label}
         </h2>
+        {section.id === 'work' && <ProjectStack />}
       </section>
     ))
   }

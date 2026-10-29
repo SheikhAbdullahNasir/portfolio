@@ -1,9 +1,9 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 3 nav and hero, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (milestone 4 selected work, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 3 (nav and hero, static) is done and pushed, including Abdullah's review fixes. Next: milestone 4 (selected work).
+Milestone 4 (selected work) is built and committed locally, **not pushed**, waiting for Abdullah's review. After approval: push, then milestone 5 (Now, About, Beyond the code, Contact).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -38,6 +38,31 @@ Milestone 3 (nav and hero, static) is done and pushed, including Abdullah's revi
   - Review fixes (Abdullah, 2026-10-29): the one-liner fits one line on desktop and uses `text-wrap: balance` on mobile; on mobile the hero text starts in the upper middle of the screen (top padding `--nav-offset` + 10svh) instead of the bottom; the pill label sizing above.
   - New token `--nav-offset` (88px); `html` has `scroll-padding-top` so anchor links land below the pill, and `scrollbar-gutter: stable` so locking scroll does not shift the layout.
   - Shipped JavaScript: about 2 KB raw, under 1 KB gzipped (inline; nav label and menu).
+- **Milestone 4 selected work** (committed locally, not pushed yet):
+  - `src/components/ProjectStack.astro`: one sticky card per published project from `getProjects()`, inside `#work`. Card i sticks at `--stack-top` + i x `--stack-peek` (desktop 104px, 124px, ...; mobile 80px, 92px, ...), so the edges of covered cards peek out. Native scroll only.
+  - Covered card: scales to 0.94 (from the top center) and darkens with a black overlay to 45% (`--stack-scale`, `--stack-dim`). Done with a CSS scroll-driven animation: a 1px marker sits at each card's in-flow position, and card i animates on marker i+1's view timeline, from the moment the next card enters the screen until it reaches its sticky top (DECISIONS #24). Browsers without scroll-driven animations (Firefox today) get a small rAF-throttled scroll script that sets `--covered` instead. The last card is never animated.
+  - Scroll room after the last card (`--stack-dwell`, 30svh) so it settles at its sticky top before the stack scrolls away.
+  - Reduced motion: scale and dim (CSS path and fallback styles) only exist inside `prefers-reduced-motion: no-preference`; the cards still stack.
+  - Keyboard: tabbing to a link in a covered card scrolls back to where that card has just stuck, so the focused link is never hidden under the next card.
+  - All cards share one height: `100svh` minus the sticky top, the peeks, and `--stack-bottom`, capped at 760px on desktop, so the lowest card always fits the screen.
+  - `src/components/ProjectCard.astro`: number and title (`h3`), status pill, headline, summary, why, fact chips, stack, links, visual. Desktop: two columns (text, visual). Mobile: visual on top taking whatever height is left, short summary, chips, buttons; why and stack hidden. Phones under 720px tall also hide the chips; laptops under 720px tall get tighter text. Live link opens in a new tab with a hidden "(opens in a new tab)". Missing why, stack, and GitHub show their placeholders.
+  - DocScout visual: the two real screenshots layered (home page, issue card over its lower right corner), WebP through Astro's `<Image>` with `srcset` (480/870 and 320/534), lazy loaded.
+  - `src/components/FlowDiagram.astro`: the Patient Voice Agent flow as an `<ol>` of five numbered HTML/CSS boxes with CSS arrows, on a dotted panel. Steps come from the project file. On short phones only the titles show.
+  - Pill counter: cards carry `data-nav-project="01"`. `NavPill` now keeps the set of cards in the band and shows the highest number, because stacked cards overlap (the old "last one to enter" logic would stick on "02" when scrolling back up).
+  - New tokens in `tokens.css`: `--stack-top`, `--stack-peek`, `--stack-gap`, `--stack-bottom`, `--stack-dwell`, `--stack-max-height`, `--stack-scale`, `--stack-dim`.
+  - Shipped JavaScript is now about 3 KB raw, 1.3 KB gzipped (all inline).
+
+## Verified (milestone 4)
+Checked in the built site served from `dist/` in the in-app browser (Chromium). Another session's Astro dev and preview servers were holding the folder, so a throwaway static server in the scratchpad was used.
+- `npx astro check`: 0 errors, 0 warnings, 0 hints (23 files). `npm run build` passes. No console errors. No em dashes in `src/`.
+- 1440x900: cards 752px tall, card 1 sticks at 104px, card 2 at 124px. As card 2 slides up, card 1 goes scale 1, 0.97, 0.947, 0.94 and dim 0, 0.20, 0.40, 0.45, and reverses when scrolling back. Card 2 never animates. Both leave together after the dwell. Text column fits. No horizontal scroll.
+- 1280x680 (short laptop): text column uses about 380px of 468px.
+- 390x844: cards 740px tall, bottoms at 820px and 832px, no overflow in either card, buttons 44px, flow details wrap and fit, no horizontal scroll.
+- 360x640: both cards fit (chips and flow details hidden), flow steps 31px with no overflow, no horizontal scroll.
+- Pill counter: "Selected work 01 / 02" on the first card, "02 / 02" once card 2 reaches the band, back to "01 / 02" scrolling up, no counter above the first card.
+- Keyboard: with card 2 covering card 1, a real Tab press moved focus to DocScout's "Visit live site"; the page scrolled back so the link is uncovered (hit test lands on the link) and the focus ring shows.
+- Reduced motion: confirmed through the CSSOM that the animation rules live only inside `@media (prefers-reduced-motion: no-preference)`. The in-app browser cannot emulate the setting, so the reduced-motion page was not watched directly.
+- Not checked: the scroll-script fallback (needs Firefox), real phones (mobile toolbars change `svh`), screen readers (only structure inspected), Lighthouse.
 
 ## Verified (milestone 3)
 Checked in the built site (`npm run preview`; another session's dev server was holding the folder) in the in-app browser.
@@ -73,7 +98,7 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 - Screenshot alt text was written from what the screenshots show; Abdullah may want to reword it.
 
 ## Not started
-- Milestones 4 to 8.
+- Milestones 5 to 8.
 
 ## Placeholders to fill (from Abdullah)
 Rendered on the site where marked "visible". The rest are notes in the project files.
@@ -94,8 +119,10 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah checks milestone 3 on the Vercel preview on his phone and laptop.
-2. Milestone 4: project cards, stacking, DocScout screenshots, Patient Voice Agent flow diagram. Add `data-nav-project` to each card to light up the pill counter.
+1. Abdullah reviews milestone 4 on his phone and laptop (locally with `npm run dev`, or on Vercel once pushed). To judge: the stacking feel, the 0.94 scale and 45% dim, card height on his phone, the screenshot layering, the flow diagram look.
+2. Push milestone 4 after approval.
+3. Milestone 5: Now, About, Beyond the code, Contact.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
+- Stacking fallback script in Firefox (no Firefox in this environment).

@@ -1,0 +1,194 @@
+---
+// Selected work: one sticky card per published project, stacking as you scroll.
+// Native scroll only. Each card sticks a little lower than the one before so the
+// edges peek out; as the next card slides over it, the covered card scales down
+// and darkens. That effect is a CSS scroll-driven animation, with a small script as
+// the fallback. Reduced motion: the cards still stack, with no scale or dim.
+//
+// How the effect is timed: a zero-height marker sits at the in-flow position of
+// every card. Card i's animation runs on marker i+1's view timeline, from the moment
+// the next card enters the viewport until it reaches its sticky top. Markers never
+// stick, so their timelines are plain scroll positions.
+import ProjectCard from './ProjectCard.astro';
+import { getProjects, projectNumber } from '../lib/projects';
+
+const projects = await getProjects();
+const timelines = projects.map((_, i) => `--stack-${i}`);
+---
+
+<div
+  class="stack"
+  data-stack
+  style={`--count: ${projects.length}; timeline-scope: ${timelines.join(', ')};`}
+>
+  {
+    projects.map((project, i) => (
+      <>
+        <span class="stack__marker" data-stack-marker style={`view-timeline-name: ${timelines[i]};`} />
+        <div
+          class="stack__item"
+          data-stack-card
+          data-nav-project={projectNumber(i)}
+          style={`--i: ${i};${timelines[i + 1] ? ` --next-timeline: ${timelines[i + 1]};` : ''}`}
+        >
+          <ProjectCard project={project} number={projectNumber(i)} />
+        </div>
+      </>
+    ))
+  }
+</div>
+
+<style>
+  @property --covered {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+  }
+
+  .stack {
+    margin-top: 48px;
+  }
+
+  /* Room after the last card, so it settles at its sticky top before the stack leaves. */
+  .stack::after {
+    content: '';
+    display: block;
+    height: var(--stack-dwell);
+  }
+
+  /* 1px tall (cancelled by the margin): a view timeline needs a box to track. */
+  .stack__marker {
+    display: block;
+    height: 1px;
+    margin-bottom: -1px;
+  }
+
+  .stack__marker + .stack__marker,
+  .stack__item + .stack__marker {
+    margin-top: var(--stack-gap);
+  }
+
+  /* Every card is the same height, sized so the lowest one still fits the screen. */
+  .stack__item {
+    position: sticky;
+    top: calc(var(--stack-top) + var(--i) * var(--stack-peek));
+    height: calc(
+      100svh - var(--stack-top) - (var(--count) - 1) * var(--stack-peek) - var(--stack-bottom)
+    );
+    border-radius: var(--radius-project);
+    transform-origin: 50% 0;
+  }
+
+  /* Dim layer over a covered card. */
+  .stack__item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (min-width: 1024px) {
+    .stack__item {
+      height: min(
+        var(--stack-max-height),
+        calc(100svh - var(--stack-top) - (var(--count) - 1) * var(--stack-peek) - var(--stack-bottom))
+      );
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Scroll-driven: compositor-only transform and opacity, no script. */
+    /* The last card is never covered, so it has no animation. */
+    @supports (animation-timeline: view()) and (timeline-scope: --a) {
+      .stack__item:not(:last-child) {
+        animation: stack-cover linear both;
+        animation-timeline: var(--next-timeline);
+        animation-range: cover 0% cover calc(100% - var(--stack-top) - (var(--i) + 1) * var(--stack-peek));
+      }
+
+      .stack__item:not(:last-child)::after {
+        animation: stack-dim linear both;
+        animation-timeline: var(--next-timeline);
+        animation-range: inherit;
+      }
+    }
+
+    /* Fallback: the script sets --covered from 0 to 1 on each card. */
+    :global([data-stack-fallback]) .stack__item {
+      transform: scale(calc(1 - (1 - var(--stack-scale)) * var(--covered)));
+    }
+
+    :global([data-stack-fallback]) .stack__item::after {
+      opacity: calc(var(--stack-dim) * var(--covered));
+    }
+  }
+
+  @keyframes stack-cover {
+    to {
+      transform: scale(var(--stack-scale));
+    }
+  }
+
+  @keyframes stack-dim {
+    to {
+      opacity: var(--stack-dim);
+    }
+  }
+</style>
+
+<script>
+  const stack = document.querySelector<HTMLElement>('[data-stack]');
+
+  if (stack) {
+    const cards = [...stack.querySelectorAll<HTMLElement>('[data-stack-card]')];
+    const markers = [...stack.querySelectorAll<HTMLElement>('[data-stack-marker]')];
+    const stickyTop = (el: HTMLElement) => parseFloat(getComputedStyle(el).top) || 0;
+
+    // A focused link in a covered card would sit under the next card. Scroll back to
+    // where that card has just stuck and nothing covers it yet.
+    stack.addEventListener('focusin', (event) => {
+      const target = event.target as HTMLElement;
+      const card = target.closest<HTMLElement>('[data-stack-card]');
+      const i = card ? cards.indexOf(card) : -1;
+      const next = cards[i + 1];
+      const marker = markers[i];
+      if (!card || !next || !marker) return;
+      if (next.getBoundingClientRect().top < target.getBoundingClientRect().bottom) {
+        const y = marker.getBoundingClientRect().top + window.scrollY - stickyTop(card);
+        window.scrollTo({ top: y, behavior: 'instant' });
+      }
+    });
+
+    // Fallback for browsers without scroll-driven animations.
+    const cssDriven = CSS.supports('animation-timeline: view()') && CSS.supports('timeline-scope: --a');
+    if (!cssDriven) {
+      stack.setAttribute('data-stack-fallback', '');
+      let frame = 0;
+
+      const update = () => {
+        frame = 0;
+        const viewport = window.innerHeight;
+        cards.forEach((card, i) => {
+          const marker = markers[i + 1];
+          const next = cards[i + 1];
+          if (!marker || !next) return;
+          const end = stickyTop(next);
+          const top = marker.getBoundingClientRect().top;
+          const progress = Math.min(1, Math.max(0, (viewport - top) / (viewport - end)));
+          card.style.setProperty('--covered', progress.toFixed(3));
+        });
+      };
+
+      const request = () => {
+        if (!frame) frame = requestAnimationFrame(update);
+      };
+
+      window.addEventListener('scroll', request, { passive: true });
+      window.addEventListener('resize', request);
+      update();
+    }
+  }
+</script>

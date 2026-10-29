@@ -216,8 +216,8 @@ const sizerLabels = [
 
 <script>
   // Updates the label to the section in view, using IntersectionObserver on a thin
-  // band 40% down the viewport. Project cards (milestone 4) opt in to the counter
-  // with a data-nav-project="01" attribute.
+  // band 40% down the viewport. Project cards opt in to the counter with a
+  // data-nav-project="01" attribute (see ProjectStack).
   const pill = document.querySelector<HTMLElement>('[data-nav-pill]');
   const label = pill?.querySelector<HTMLElement>('[data-nav-label]');
   const counter = pill?.querySelector<HTMLElement>('[data-nav-counter]');
@@ -248,12 +248,17 @@ const sizerLabels = [
       render();
     }, band);
 
+    // Stacked cards overlap, so several can sit in the band at once. The one on top
+    // is the latest in page order, which is the highest number.
+    const projectsInBand = new Set<string>();
     const projectObserver = new IntersectionObserver((entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) {
-          currentProject = (entry.target as HTMLElement).dataset.navProject ?? null;
-        }
+        const number = (entry.target as HTMLElement).dataset.navProject;
+        if (!number) continue;
+        if (entry.isIntersecting) projectsInBand.add(number);
+        else projectsInBand.delete(number);
       }
+      currentProject = [...projectsInBand].sort().at(-1) ?? null;
       render();
     }, band);
 

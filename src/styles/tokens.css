@@ -54,6 +54,16 @@
   --touch-target: 44px;
   --nav-offset: 88px; /* space kept clear for the fixed pill nav */
 
+  /* Selected work: sticky stacking cards */
+  --stack-top: 80px; /* sticky top of the first card, just below the pill */
+  --stack-peek: 12px; /* each later card sticks this much lower, so edges peek out */
+  --stack-gap: 24px; /* space between cards before they stack */
+  --stack-bottom: 12px; /* space kept below the lowest card */
+  --stack-dwell: 30svh; /* scroll room after the last card settles */
+  --stack-max-height: 760px;
+  --stack-scale: 0.94; /* covered card scales to this */
+  --stack-dim: 0.45; /* covered card darkens to this overlay opacity */
+
   /* Focus */
   --focus-ring: 2px solid var(--accent);
   --focus-offset: 3px;
@@ -62,5 +72,9 @@
 @media (min-width: 1024px) {
   :root {
     --gutter: 80px; /* desktop side padding */
+    --stack-top: 104px;
+    --stack-peek: 20px;
+    --stack-gap: 40px;
+    --stack-bottom: 24px;
   }
 }

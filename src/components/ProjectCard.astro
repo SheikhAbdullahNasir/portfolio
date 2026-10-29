@@ -1,0 +1,357 @@
+---
+// One project card: label, status, headline, summary, why, facts, stack, links, and
+// the visual (layered screenshots or a flow diagram). Colors come from the project's
+// palette name. Mobile shows the short summary and hides why and stack so the card
+// fits one screen; the visual takes whatever height is left.
+import { Image } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+import FlowDiagram from './FlowDiagram.astro';
+import type { Project } from '../lib/projects';
+
+interface Props {
+  project: Project;
+  number: string;
+}
+
+const { project, number } = Astro.props;
+const { data } = project;
+const titleId = `project-${data.slug}`;
+---
+
+<article
+  class="card"
+  aria-labelledby={titleId}
+  style={`--card: var(--card-${data.color}); --card-ink: var(--card-${data.color}-ink); --card-muted: var(--card-${data.color}-muted);`}
+>
+  <div class="card__text">
+    <div class="card__meta">
+      <h3 class="card__title" id={titleId}>
+        <span class="card__number">{number}</span>
+        {data.title}
+      </h3>
+      <p class="card__status">{data.status}</p>
+    </div>
+
+    <p class="card__headline">{data.headline}</p>
+
+    <p class="card__summary card__summary--full">{data.summary}</p>
+    <p class="card__summary card__summary--short">{data.mobileSummary ?? data.summary}</p>
+
+    <p class="card__why card__extra">{data.why ?? <Placeholder name="projectWhy" />}</p>
+
+    {
+      data.facts.length > 0 && (
+        <ul class="card__facts" aria-label="Key facts">
+          {data.facts.map((fact) => (
+            <li>{fact}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    <p class="card__stack card__extra">
+      <span class="card__stack-label">Stack</span>
+      {data.stack.length > 0 ? data.stack.join(' · ') : <Placeholder name="projectStack" />}
+    </p>
+
+    <div class="card__links">
+      {
+        data.links.live && (
+          <a class="card__button card__button--solid" href={data.links.live} target="_blank" rel="noopener">
+            Visit live site <span aria-hidden="true">↗</span>
+            <span class="visually-hidden">(opens in a new tab)</span>
+          </a>
+        )
+      }
+      {
+        data.links.github ? (
+          <a class="card__button" href={data.links.github} target="_blank" rel="noopener">
+            GitHub <span aria-hidden="true">↗</span>
+            <span class="visually-hidden">(opens in a new tab)</span>
+          </a>
+        ) : (
+          <Placeholder name="projectGithub" />
+        )
+      }
+    </div>
+  </div>
+
+  <div class="card__visual">
+    {
+      data.visual.type === 'screenshots' ? (
+        <div class="shots">
+          {data.visual.images.map((img, i) => (
+            <Image
+              class:list={['shots__image', i === 0 ? 'shots__image--main' : 'shots__image--over']}
+              src={img.src}
+              alt={img.alt}
+              widths={i === 0 ? [480, 870] : [320, 534]}
+              sizes={i === 0 ? '(min-width: 1024px) 40vw, 80vw' : '(min-width: 1024px) 20vw, 45vw'}
+            />
+          ))}
+        </div>
+      ) : (
+        <FlowDiagram steps={data.visual.steps} label={`How ${data.title} works`} />
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    overflow: hidden;
+    border-radius: var(--radius-project);
+    background: var(--card);
+    color: var(--card-ink);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .card__text {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Visual on top on mobile; it takes the height the text leaves. */
+  .card__visual {
+    order: -1;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+  }
+
+  .card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .card__title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--font-text);
+    font-weight: var(--weight-semibold);
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .card__number {
+    color: var(--card-muted);
+    font-family: var(--font-mono);
+    font-weight: var(--weight-regular);
+    font-size: 0.8125rem;
+  }
+
+  .card__status {
+    flex: none;
+    padding: 4px 12px;
+    border: 1px solid color-mix(in srgb, var(--card-ink) 30%, transparent);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .card__headline {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: 1.375rem;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  .card__summary {
+    color: var(--card-muted);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .card__summary--full,
+  .card__extra {
+    display: none;
+  }
+
+  .card__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .card__facts li {
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--card-ink) 10%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .card__stack-label {
+    margin-right: 10px;
+    color: var(--card-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .card__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--touch-target);
+    padding: 0 18px;
+    border: 1px solid color-mix(in srgb, var(--card-ink) 40%, transparent);
+    border-radius: var(--radius-pill);
+    font-weight: var(--weight-semibold);
+    font-size: 0.9375rem;
+    text-decoration: none;
+  }
+
+  .card__button--solid {
+    border-color: var(--card-ink);
+    background: var(--card-ink);
+    color: var(--card);
+  }
+
+  .card__button:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Layered screenshots: the page fills the space, the issue card sits over its corner. */
+  .shots {
+    position: absolute;
+    inset: 0;
+  }
+
+  .shots__image {
+    position: absolute;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .shots__image--main {
+    top: 0;
+    left: 0;
+    width: 92%;
+    height: auto;
+    max-height: 86%;
+    aspect-ratio: 870 / 680;
+    object-fit: cover;
+    object-position: top left;
+  }
+
+  .shots__image--over {
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: 70%;
+    aspect-ratio: 534 / 660;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+  }
+
+  /* Short phones: drop the chips so the visual keeps enough room. */
+  @media (max-width: 1023px) and (max-height: 720px) {
+    .card__facts {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 48px;
+      padding: 40px;
+    }
+
+    .card__visual {
+      order: 0;
+    }
+
+    .card__text {
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .card__meta {
+      justify-content: flex-start;
+    }
+
+    .card__headline {
+      font-size: clamp(1.75rem, 1rem + 1.5vw, 2.75rem);
+    }
+
+    .card__summary {
+      font-size: 1.0625rem;
+    }
+
+    .card__summary--full {
+      display: block;
+    }
+
+    .card__summary--short {
+      display: none;
+    }
+
+    .card__extra {
+      display: block;
+    }
+
+    .card__why {
+      font-size: 0.9375rem;
+      font-style: italic;
+    }
+
+    .card__links {
+      margin-top: 8px;
+    }
+
+    .shots__image--main {
+      width: 88%;
+      max-height: 82%;
+    }
+
+    .shots__image--over {
+      height: auto;
+      width: 40%;
+    }
+  }
+
+  /* Short laptop screens: tighter text so the card still fits. */
+  @media (min-width: 1024px) and (max-height: 720px) {
+    .card {
+      padding: 32px;
+    }
+
+    .card__text {
+      gap: 12px;
+    }
+
+    .card__headline {
+      font-size: clamp(1.5rem, 0.75rem + 1.5vw, 2.25rem);
+    }
+
+    .card__summary {
+      font-size: 1rem;
+    }
+  }
+</style>
