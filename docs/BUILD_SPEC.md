@@ -99,7 +99,7 @@ _Written 2026-10-29 from the design phase in Claude chat. Every visual value her
 - Status: placeholder. Abdullah wants to research a more relevant 3D object later; that object may be heavier (Three.js or Spline). Keep the hero layout so the object can be swapped without touching the text.
 
 ### 5.2 Melt effect (candidate)
-- SVG goo filter on the hero name: letters scale and lean slightly toward the cursor, then blur and threshold so neighbours fuse. Tuned by Abdullah to about Melt 7, Pull 0.15, later lowered to Pull 0.06 (DECISIONS #33; values in `meltSettings`, `src/data/features.ts`).
+- SVG goo filter on the hero name: letters scale and lean slightly toward the cursor, then blur and threshold so neighbours fuse. Tuned by Abdullah to about Melt 7, Pull 0.15, later Melt 9, Pull 0.06; kept (DECISIONS #33, #34; values in `meltSettings`, `src/data/features.ts`).
 - Reference: `docs/reference/melt-test.html`.
 - Requirements: real text for screen readers (letters split visually only), off for touch screens or replaced by a gentle idle wave, off for reduced motion, filter only active while interacting, blur scales with font size.
 
