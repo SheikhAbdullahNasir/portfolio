@@ -3,7 +3,7 @@
 _Last updated 2026-10-29 (milestone 6, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 6 (interactions: globe, cursor glow, melt, scroll reveals) is built and checked locally in the built site. Committed locally, not pushed yet, so the Vercel preview does not show it. Waiting for Abdullah's review. Next after approval: milestone 7 (quality pass).
+Milestone 6 (interactions: globe, cursor glow, melt, scroll reveals) is built, checked locally in the built site, and pushed (commit `cda3262`), so it deploys to the Vercel preview. Waiting for Abdullah's review. Next after approval: milestone 7 (quality pass).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -66,7 +66,7 @@ Milestone 6 (interactions: globe, cursor glow, melt, scroll reveals) is built an
   - `src/components/Footer.astro` in the base layout: copyright with the build year, "Download resume PDF" (placeholder until the PDF exists), "Back to top" (`#top`).
   - Shipped JavaScript is now about 4.9 KB raw, 2 KB gzipped (all inline).
 
-- **Milestone 6 interactions** (waiting for review):
+- **Milestone 6 interactions** (commit `cda3262`, pushed; waiting for review):
   - Flags in `src/data/features.ts`: `melt` and `scrollReveals` (both on). Setting one to `false` removes that effect and leaves the plain page.
   - Globe, `src/scripts/globe.ts` (rewritten from `docs/reference/globe.js`, typed): about 900 points on a Fibonacci sphere (650 below 450px), Karachi pin with a pulsing ring, arcs to London, New York, Dubai, Berlin, Singapore, San Francisco, Toronto with a travelling dot on each, gentle sway. Colors come from the `--accent` and `--ink` tokens. The canvas sizes itself to the hero's object slot (ResizeObserver) at up to 2x pixel density.
     - Loading: `Hero.astro` fetches the module with a dynamic `import()` after the `load` event, in `requestIdleCallback` (2s timeout; `setTimeout` where it is missing). The canvas and caption fade in after the first frame.
@@ -197,9 +197,8 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Globe orientation after the fix (Karachi now faces the viewer; the reference had it on the far side).
 
 ## Next useful action
-1. Push milestone 6 so it reaches the Vercel preview (on Abdullah's go-ahead).
-2. Abdullah reviews milestone 6 on his laptop and phone. To judge: the globe's position and size on both, its orientation (Karachi facing the viewer), the cursor tilt and the phone drag, the glow strength, the melt feel and whether to keep it, and whether the scroll reveals feel subtle enough. Also worth a check with reduced motion on in the OS or DevTools (still globe, no glow, no melt, no reveals).
-3. Milestone 7 (quality pass) once milestone 6 is approved.
+1. Abdullah reviews milestone 6 on the Vercel preview on his laptop and phone. To judge: the globe's position and size on both, its orientation (Karachi facing the viewer), the cursor tilt and the phone drag, the glow strength, the melt feel and whether to keep it, and whether the scroll reveals feel subtle enough. Also worth a check with reduced motion on in the OS or DevTools (still globe, no glow, no melt, no reveals).
+2. Milestone 7 (quality pass) once milestone 6 is approved.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
