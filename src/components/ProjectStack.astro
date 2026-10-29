@@ -5,7 +5,7 @@
 // and darkens. That effect is a CSS scroll-driven animation, with a small script as
 // the fallback. Reduced motion: the cards still stack, with no scale or dim.
 //
-// How the effect is timed: a zero-height marker sits at the in-flow position of
+// How the effect is timed: a 1px marker sits at the in-flow position of
 // every card. Card i's animation runs on marker i+1's view timeline, from the moment
 // the next card enters the viewport until it reaches its sticky top. Markers never
 // stick, so their timelines are plain scroll positions.
@@ -39,9 +39,10 @@ const timelines = projects.map((_, i) => `--stack-${i}`);
 </div>
 
 <style>
+  /* Inherits so the card's ::after dim layer can read it. */
   @property --covered {
     syntax: '<number>';
-    inherits: false;
+    inherits: true;
     initial-value: 0;
   }
 
@@ -126,6 +127,21 @@ const timelines = projects.map((_, i) => `--stack-${i}`);
     }
   }
 
+  /* Reduced motion: cards stack with no scale or dim. Stated outright with
+     !important (which beats animation values in the cascade) instead of relying
+     only on the rules above being absent, so no path can leak through. */
+  @media (prefers-reduced-motion: reduce) {
+    .stack__item {
+      animation: none !important;
+      transform: none !important;
+    }
+
+    .stack__item::after {
+      animation: none !important;
+      opacity: 0 !important;
+    }
+  }
+
   @keyframes stack-cover {
     to {
       transform: scale(var(--stack-scale));
@@ -162,14 +178,20 @@ const timelines = projects.map((_, i) => `--stack-${i}`);
       }
     });
 
-    // Fallback for browsers without scroll-driven animations.
+    // Fallback for browsers without scroll-driven animations. Under reduced motion it
+    // clears its inline values and does nothing, and it follows the setting live.
     const cssDriven = CSS.supports('animation-timeline: view()') && CSS.supports('timeline-scope: --a');
     if (!cssDriven) {
       stack.setAttribute('data-stack-fallback', '');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
       let frame = 0;
 
       const update = () => {
         frame = 0;
+        if (reducedMotion.matches) {
+          cards.forEach((card) => card.style.removeProperty('--covered'));
+          return;
+        }
         const viewport = window.innerHeight;
         cards.forEach((card, i) => {
           const marker = markers[i + 1];
@@ -188,6 +210,7 @@ const timelines = projects.map((_, i) => `--stack-${i}`);
 
       window.addEventListener('scroll', request, { passive: true });
       window.addEventListener('resize', request);
+      reducedMotion.addEventListener('change', update);
       update();
     }
   }
