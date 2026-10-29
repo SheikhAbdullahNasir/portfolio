@@ -89,7 +89,7 @@
 
   /* Hero effects */
   --hero-glow: rgba(255, 244, 230, 0.05); /* cursor glow: neutral warm white (desktop) */
-  --hero-glow-size: 420px; /* radius of the glow */
+  --hero-glow-size: 220px; /* radius of the glow: a small spotlight around the cursor */
   --globe-opacity: 0.6; /* mobile: behind the text */
   --reveal-duration: 0.7s;
   --reveal-blur: 6px;

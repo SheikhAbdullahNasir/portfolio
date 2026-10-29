@@ -1,10 +1,11 @@
 // Melt on the hero name: letters swell and lean toward the cursor, then an SVG goo
 // filter (blur plus alpha threshold) fuses neighbours. Rewritten from
-// docs/reference/melt-test.html with Abdullah's picks (Melt 7, Pull 0.15).
+// docs/reference/melt-test.html. Tuning (Melt, Pull) lives in src/data/features.ts.
 // Mouse only and never under reduced motion; the filter is only on while moving.
+import { meltSettings } from '../data/features';
 
-const MELT = 7;
-const PULL = 0.15;
+const MELT = meltSettings.melt;
+const PULL = meltSettings.pull;
 
 interface Letter {
   el: HTMLSpanElement;
