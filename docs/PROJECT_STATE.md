@@ -3,7 +3,7 @@
 _Last updated 2026-10-29 (milestone 4 selected work, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 4 (selected work) is built and committed locally, **not pushed**, waiting for Abdullah's review. After approval: push, then milestone 5 (Now, About, Beyond the code, Contact).
+Milestone 4 (selected work) is done and pushed (commit `85e7956`). Next: Abdullah checks it on the Vercel preview on his phone and laptop, then milestone 5 (Now, About, Beyond the code, Contact).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -38,7 +38,7 @@ Milestone 4 (selected work) is built and committed locally, **not pushed**, wait
   - Review fixes (Abdullah, 2026-10-29): the one-liner fits one line on desktop and uses `text-wrap: balance` on mobile; on mobile the hero text starts in the upper middle of the screen (top padding `--nav-offset` + 10svh) instead of the bottom; the pill label sizing above.
   - New token `--nav-offset` (88px); `html` has `scroll-padding-top` so anchor links land below the pill, and `scrollbar-gutter: stable` so locking scroll does not shift the layout.
   - Shipped JavaScript: about 2 KB raw, under 1 KB gzipped (inline; nav label and menu).
-- **Milestone 4 selected work** (committed locally, not pushed yet):
+- **Milestone 4 selected work** (commit `85e7956`, pushed):
   - `src/components/ProjectStack.astro`: one sticky card per published project from `getProjects()`, inside `#work`. Card i sticks at `--stack-top` + i x `--stack-peek` (desktop 104px, 124px, ...; mobile 80px, 92px, ...), so the edges of covered cards peek out. Native scroll only.
   - Covered card: scales to 0.94 (from the top center) and darkens with a black overlay to 45% (`--stack-scale`, `--stack-dim`). Done with a CSS scroll-driven animation: a 1px marker sits at each card's in-flow position, and card i animates on marker i+1's view timeline, from the moment the next card enters the screen until it reaches its sticky top (DECISIONS #24). Browsers without scroll-driven animations (Firefox today) get a small rAF-throttled scroll script that sets `--covered` instead. The last card is never animated.
   - Scroll room after the last card (`--stack-dwell`, 30svh) so it settles at its sticky top before the stack scrolls away.
@@ -119,9 +119,8 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah reviews milestone 4 on his phone and laptop (locally with `npm run dev`, or on Vercel once pushed). To judge: the stacking feel, the 0.94 scale and 45% dim, card height on his phone, the screenshot layering, the flow diagram look.
-2. Push milestone 4 after approval.
-3. Milestone 5: Now, About, Beyond the code, Contact.
+1. Abdullah reviews milestone 4 on the Vercel preview on his phone and laptop. To judge: the stacking feel, the 0.94 scale and 45% dim, card height on his phone, the screenshot layering, the flow diagram look.
+2. Milestone 5: Now, About, Beyond the code, Contact.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
