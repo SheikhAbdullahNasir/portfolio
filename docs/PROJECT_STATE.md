@@ -3,11 +3,11 @@
 _Last updated 2026-10-29 (milestone 3 nav and hero, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 3 (nav and hero, static) is built and committed locally, not pushed. Waiting for Abdullah's review before milestone 4.
+Milestone 3 (nav and hero, static) is done, committed, and pushed (commit `4d02498`). Next: milestone 4 (selected work).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
-- Milestone 2 is pushed (commit `4f94692`). The home page looks the same as milestone 1 because sections are still empty; `/content-preview` is dev-only and not deployed.
+- Milestone 3 is pushed (commit `4d02498`): the live preview now shows the pill nav, the menu, and the hero text. Sections below the hero are still empty; `/content-preview` is dev-only and not deployed.
 
 ## Done
 - Content plan and copy (`docs/CONTENT.md`).
@@ -28,7 +28,7 @@ Milestone 3 (nav and hero, static) is built and committed locally, not pushed. W
   - Placeholders: missing content is left out of the data (optional field, empty list, no link), and the page renders the matching text from `src/data/placeholders.ts` through `src/components/Placeholder.astro` (dashed accent box, mono font). Adding the real content makes the placeholder disappear by itself.
   - Dev-only review page at `/content-preview` (`src/pages/[devPage].astro`): every piece of content and every placeholder in plain form, with project cards in their colors. It only exists under `npm run dev`; the production build does not include it.
   - The home page still shows empty sections. Rendering the content there starts in milestone 3.
-- **Milestone 3 nav and hero** (committed locally, not pushed; waiting for review):
+- **Milestone 3 nav and hero** (commit `4d02498`, pushed):
   - `src/components/NavPill.astro`: fixed pill (centered from 1024px, full width with 12px margins below). "A" monogram links to `#top`, label shows "Abdullah Bin Nasir" in the hero and the section name after that, divider and Résumé on desktop only, accent Menu button. The label uses `IntersectionObserver` on a thin band 40% down the viewport; reaching the page end (footer in view) counts as the last section, so Contact still shows when it is too short to reach the band. Label width is fixed on desktop so the centered pill does not jump.
   - Project counter ("01 / 02") is wired but has nothing to count yet: milestone 4 cards opt in with `data-nav-project="01"` inside `#work`. The total comes from `getProjects()`.
   - `src/components/MenuOverlay.astro`: full-screen modal `<dialog>` with numbered section links, Résumé, and email. Esc closes (native), Tab and Shift+Tab wrap inside the menu, focus returns to the Menu button on close, `aria-expanded` stays in sync, page scroll is locked while open. Choosing a section link closes the menu and moves focus to that section (sections have `tabindex="-1"`), so the next Tab continues from there; see DECISIONS #23.
@@ -88,7 +88,7 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah reviews milestone 3 (pill, menu, hero) on desktop and phone; then push to `main` for a Vercel preview.
+1. Abdullah checks milestone 3 on the Vercel preview on his phone and laptop.
 2. Milestone 4: project cards, stacking, DocScout screenshots, Patient Voice Agent flow diagram. Add `data-nav-project` to each card to light up the pill counter.
 
 ## Checks not yet possible
