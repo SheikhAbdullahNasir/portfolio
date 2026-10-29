@@ -62,7 +62,7 @@
   --stack-dwell: 8svh; /* scroll room after the last card settles */
   --stack-max-height: 760px;
   --stack-scale: 0.94; /* covered card scales to this */
-  --stack-dim: 0.4; /* covered card darkens to this overlay opacity */
+  --stack-dim: 0.3; /* covered card darkens to this overlay opacity */
 
   /* Focus */
   --focus-ring: 2px solid var(--accent);

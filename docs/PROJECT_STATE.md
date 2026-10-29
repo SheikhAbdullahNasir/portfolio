@@ -40,7 +40,7 @@ Milestone 4 (selected work) is done and pushed, including Abdullah's review tuni
   - Shipped JavaScript: about 2 KB raw, under 1 KB gzipped (inline; nav label and menu).
 - **Milestone 4 selected work** (commit `85e7956`, pushed):
   - `src/components/ProjectStack.astro`: one sticky card per published project from `getProjects()`, inside `#work`. Card i sticks at `--stack-top` + i x `--stack-peek` (desktop 104px, 124px, ...; mobile 80px, 92px, ...), so the edges of covered cards peek out. Native scroll only.
-  - Covered card: scales to 0.94 (from the top center) and darkens with a black overlay to 40% (`--stack-scale`, `--stack-dim`). Done with a CSS scroll-driven animation: a 1px marker sits at each card's in-flow position, and card i animates on marker i+1's view timeline, from the moment the next card enters the screen until it reaches its sticky top (DECISIONS #24). Browsers without scroll-driven animations (Firefox today) get a small rAF-throttled scroll script that sets `--covered` instead. The last card is never animated.
+  - Covered card: scales to 0.94 (from the top center) and darkens with a black overlay to 30% (`--stack-scale`, `--stack-dim`). Done with a CSS scroll-driven animation: a 1px marker sits at each card's in-flow position, and card i animates on marker i+1's view timeline, from the moment the next card enters the screen until it reaches its sticky top (DECISIONS #24). Browsers without scroll-driven animations (Firefox today) get a small rAF-throttled scroll script that sets `--covered` instead. The last card is never animated.
   - Scroll room after the last card (`--stack-dwell`: 30svh on desktop, 8svh on mobile) so it settles at its sticky top before the stack scrolls away. On mobile the work section's bottom padding is 24px instead of 96px, so the gap before Now stays small.
   - Reduced motion: scale and dim (CSS path and fallback styles) only exist inside `prefers-reduced-motion: no-preference`; the cards still stack.
   - Keyboard: tabbing to a link in a covered card scrolls back to where that card has just stuck, so the focused link is never hidden under the next card.
@@ -68,6 +68,7 @@ Checked in the built site served from `dist/` in the in-app browser (Chromium). 
 Abdullah's review (2026-10-29): fuller flow diagram on desktop, dim 45% to 40%, less space after the last card on mobile. Checked the same way (built `dist/` in the in-app browser).
 - `npx astro check` 0 errors; build passes.
 - 1440x900: flow steps 91px each (were 69px), 511px wide, spanning 600px of the 672px visual area (89%); no overflow in steps or card. Covered card ends at scale 0.94 and dim 0.40. No horizontal scroll.
+- Follow-up (Abdullah, 2026-10-29): `--stack-dim` lowered again to 0.3. At 1440x900 the covered card's overlay goes 0.01, 0.17, 0.30 as the next card slides up (scale still ends at 0.94); also confirmed at the in-app pane's own mobile-width size. Build passes.
 - 390x844: gap from the last card's bottom to the Now heading is 189px (was about 445px). The last card still reaches its sticky top (92px) and holds there for about 67px of scroll before leaving. No horizontal scroll. Card layout unchanged from the milestone 4 check.
 
 ## Verified (milestone 3)
@@ -125,7 +126,7 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah rechecks milestone 4 on the Vercel preview on his phone and laptop after the tuning. To judge: the stacking feel, the 0.94 scale and 40% dim, card height on his phone, the screenshot layering, the flow diagram look.
+1. Abdullah rechecks milestone 4 on the Vercel preview on his phone and laptop after the tuning. To judge: the stacking feel, the 0.94 scale and 30% dim, card height on his phone, the screenshot layering, the flow diagram look.
 2. Milestone 5: Now, About, Beyond the code, Contact.
 
 ## Checks not yet possible
