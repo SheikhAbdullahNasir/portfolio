@@ -92,6 +92,24 @@ a {
   transform: none;
 }
 
+/* Scroll reveals (src/scripts/reveal.ts). Hidden only once the script has set
+   html.reveal, and never under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal [data-reveal]:not(.is-revealed) {
+    opacity: 0;
+    filter: blur(var(--reveal-blur));
+    translate: 0 var(--reveal-rise);
+  }
+
+  /* Only the reveal animates; hiding is instant, so nothing visible fades out at load. */
+  .reveal [data-reveal].is-revealed {
+    transition:
+      opacity var(--reveal-duration) ease,
+      filter var(--reveal-duration) ease,
+      translate var(--reveal-duration) cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+}
+
 /* Every animation must respect reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -9,7 +9,7 @@ const lastIndex = about.timeline.length - 1;
 ---
 
 <div class="about">
-  <ol class="about__timeline">
+  <ol class="about__timeline" data-reveal>
     {
       about.timeline.map((step, i) => (
         <li class:list={['about__step', { 'about__step--current': i === lastIndex }]}>
@@ -19,7 +19,7 @@ const lastIndex = about.timeline.length - 1;
       ))
     }
   </ol>
-  <p class="about__paragraph">{about.paragraph}</p>
+  <p class="about__paragraph" data-reveal>{about.paragraph}</p>
 </div>
 
 <style>

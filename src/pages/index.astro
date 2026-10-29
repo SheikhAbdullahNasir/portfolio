@@ -20,7 +20,7 @@ import { navSections } from '../data/nav';
         aria-labelledby={`${section.id}-heading`}
         tabindex="-1"
       >
-        <h2 id={`${section.id}-heading`} class="section__heading">
+        <h2 id={`${section.id}-heading`} class="section__heading" data-reveal>
           {section.label}
         </h2>
         {section.id === 'work' && <ProjectStack />}

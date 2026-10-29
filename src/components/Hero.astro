@@ -1,20 +1,30 @@
 ---
-// Hero text and buttons. The globe, cursor glow, and melt come in milestone 6;
-// the empty object slot keeps their place so the text never has to move.
+// Hero text and buttons, plus the milestone 6 effects: the globe (lazy canvas in the
+// object slot, swappable without touching the text), the cursor glow (desktop mouse),
+// and the melt on the name (behind `features.melt`).
 import { site } from '../data/site';
 import { hero } from '../data/hero';
+import { features } from '../data/features';
 
 // Screen readers hear the full name; the page shows only the first name.
 const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.length) : '';
 ---
 
-<section id="top" class="hero" aria-labelledby="hero-name" tabindex="-1">
-  <div class="hero__object" aria-hidden="true" data-hero-object></div>
+<section id="top" class="hero" aria-labelledby="hero-name" tabindex="-1" data-hero>
+  <div class="hero__glow" aria-hidden="true" data-hero-glow></div>
+
+  <!-- Decorative; the caption repeats the status line, so it stays hidden from screen readers too. -->
+  <div class="hero__object" aria-hidden="true" data-hero-object>
+    <canvas class="hero__canvas" data-globe></canvas>
+    <p class="hero__caption">{hero.globeCaption}</p>
+  </div>
 
   <div class="hero__text">
     <p class="hero__label">{hero.label}</p>
-    <h1 id="hero-name" class="hero__name">
-      {hero.name}{nameRest && <span class="visually-hidden">{nameRest}</span>}
+    <h1 id="hero-name" class="hero__name" data-melt={features.melt ? '' : undefined}>
+      <span data-melt-text>{hero.name}</span>{
+        nameRest && <span class="visually-hidden">{nameRest}</span>
+      }
     </h1>
     <p class="hero__one-liner">{hero.oneLiner}</p>
     <p class="hero__status">
@@ -28,7 +38,85 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
       </a>
     </div>
   </div>
+
+  {
+    features.melt && (
+      <svg class="hero__filters" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <filter
+            id="hero-melt"
+            x="-20%"
+            y="-60%"
+            width="140%"
+            height="220%"
+            color-interpolation-filters="sRGB"
+          >
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0" result="blur" data-melt-blur />
+            <feColorMatrix
+              in="blur"
+              type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"
+            />
+          </filter>
+        </defs>
+      </svg>
+    )
+  }
 </section>
+
+<script>
+  import { initMelt } from '../scripts/melt';
+
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+  // Globe: fetched only once the page has loaded and the browser is idle.
+  const slot = hero?.querySelector<HTMLElement>('[data-hero-object]');
+  const canvas = slot?.querySelector<HTMLCanvasElement>('[data-globe]');
+  if (hero && slot && canvas) {
+    const start = () =>
+      import('../scripts/globe').then(({ initGlobe }) =>
+        initGlobe(canvas, {
+          interactive: finePointer.matches ? 'pointer' : 'drag',
+          dragArea: hero,
+          onReady: () => slot.classList.add('is-ready'),
+        }),
+      );
+    const whenIdle = () =>
+      'requestIdleCallback' in window
+        ? requestIdleCallback(start, { timeout: 2000 })
+        : setTimeout(start, 200);
+    if (document.readyState === 'complete') whenIdle();
+    else window.addEventListener('load', whenIdle, { once: true });
+  }
+
+  // Cursor glow: follows the mouse over the hero (CSS shows it on desktop only).
+  const glow = hero?.querySelector<HTMLElement>('[data-hero-glow]');
+  if (hero && glow) {
+    let frame = 0;
+    let x = 0;
+    let y = 0;
+    hero.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'mouse') return;
+      const box = hero.getBoundingClientRect();
+      x = event.clientX - box.left;
+      y = event.clientY - box.top;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        glow.style.setProperty('--glow-x', `${x}px`);
+        glow.style.setProperty('--glow-y', `${y}px`);
+        glow.classList.add('is-on');
+      });
+    });
+    hero.addEventListener('pointerleave', () => glow.classList.remove('is-on'));
+  }
+
+  // Melt: only set up for a mouse; the module checks reduced motion on every move.
+  const name = hero?.querySelector<HTMLElement>('[data-melt]');
+  const blur = hero?.querySelector<SVGFEGaussianBlurElement>('[data-melt-blur]');
+  if (hero && name && blur && finePointer.matches) initMelt(name, hero, blur, 'hero-melt');
+</script>
 
 <style>
   .hero {
@@ -46,7 +134,39 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
     outline: none;
   }
 
-  /* Globe slot (milestone 6). Mobile: behind the text, off the right edge. Desktop: right side. */
+  /* Touch screens drag the globe sideways; vertical scrolling and pinch zoom stay native. */
+  @media (hover: none) {
+    .hero {
+      touch-action: pan-y pinch-zoom;
+    }
+  }
+
+  /* Cursor glow: desktop mouse only, never under reduced motion. */
+  .hero__glow {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      var(--hero-glow-size) circle at var(--glow-x, 50%) var(--glow-y, 50%),
+      var(--hero-glow),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  @media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .hero__glow {
+      display: block;
+    }
+
+    .hero__glow:global(.is-on) {
+      opacity: 1;
+    }
+  }
+
+  /* Globe slot. Mobile: behind the text, off the right edge. Desktop: right side. */
   .hero__object {
     position: absolute;
     top: 12%;
@@ -54,6 +174,25 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
     width: 90vw;
     aspect-ratio: 1;
     pointer-events: none;
+  }
+
+  .hero__canvas {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  .hero__object:global(.is-ready) .hero__canvas {
+    opacity: var(--globe-opacity);
+  }
+
+  .hero__caption {
+    display: none;
+  }
+
+  .hero__filters {
+    position: absolute;
   }
 
   .hero__text {
@@ -76,6 +215,17 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
     font-size: clamp(4.5rem, 21vw, 15rem);
     line-height: 0.9;
     letter-spacing: -0.035em;
+  }
+
+  /* Melt letters, added by src/scripts/melt.ts (a visual copy of the name). */
+  .hero__name :global(.melt-letters) {
+    position: relative;
+    display: inline-block;
+    user-select: none;
+  }
+
+  .hero__name :global(.melt-letters > span) {
+    display: inline-block;
   }
 
   .hero__one-liner {
@@ -161,6 +311,25 @@ const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.len
       right: var(--gutter);
       width: min(46vw, 640px);
       transform: translateY(-50%);
+    }
+
+    .hero__caption {
+      display: block;
+      position: absolute;
+      bottom: 2%;
+      inset-inline: 0;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.8s ease 0.2s;
+    }
+
+    .hero__object:global(.is-ready) .hero__caption {
+      opacity: 1;
     }
   }
 </style>

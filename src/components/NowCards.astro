@@ -6,11 +6,11 @@ import { now } from '../data/now';
 ---
 
 <div class="now">
-  <p class="now__updated">{now.lastUpdatedLabel} {now.lastUpdated}</p>
+  <p class="now__updated" data-reveal>{now.lastUpdatedLabel} {now.lastUpdated}</p>
   <ul class="now__list">
     {
       now.items.map((item) => (
-        <li class="now__card">
+        <li class="now__card" data-reveal>
           <span class="now__icon">
             <Icon name={item.icon} size={22} />
           </span>

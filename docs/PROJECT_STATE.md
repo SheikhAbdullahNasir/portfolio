@@ -1,9 +1,9 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 5, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (milestone 6, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 5 (Now, About, Beyond the code, Contact, footer) is built, checked locally, and pushed (commit `2ba73f1`; Remix Icon decision confirmed in `3dfaea1`). Waiting for Abdullah's review on the Vercel preview. Next after approval: milestone 6 (interactions).
+Milestone 6 (interactions: globe, cursor glow, melt, scroll reveals) is built and checked locally in the built site. Committed locally, not pushed yet, so the Vercel preview does not show it. Waiting for Abdullah's review. Next after approval: milestone 7 (quality pass).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -65,6 +65,30 @@ Milestone 5 (Now, About, Beyond the code, Contact, footer) is built, checked loc
   - `src/components/Contact.astro`: big headline and sub-line; the email as a large `mailto:` link with an accent underline that sweeps in on hover and focus; a "Copy email" button (JavaScript only) that shows "Copied" for 2 seconds and announces it through a `role="status"` region. Copy tries the Clipboard API, then `execCommand('copy')`; if both are blocked it selects the email text. Tiles for LinkedIn, GitHub, X, Instagram: brand icon in a 32px tile, name, handle, arrow, new tab with a hidden "(opens in a new tab)"; lift and arrow nudge on hover; magnetic pull up to 6px for a mouse only, never under reduced motion. The résumé tile in the accent color takes a full row under the socials; while the PDF is missing it shows the placeholder, and its "Download PDF" link appears once `href` is set. Tiles: one column, two from 640px, four from 1024px.
   - `src/components/Footer.astro` in the base layout: copyright with the build year, "Download resume PDF" (placeholder until the PDF exists), "Back to top" (`#top`).
   - Shipped JavaScript is now about 4.9 KB raw, 2 KB gzipped (all inline).
+
+- **Milestone 6 interactions** (waiting for review):
+  - Flags in `src/data/features.ts`: `melt` and `scrollReveals` (both on). Setting one to `false` removes that effect and leaves the plain page.
+  - Globe, `src/scripts/globe.ts` (rewritten from `docs/reference/globe.js`, typed): about 900 points on a Fibonacci sphere (650 below 450px), Karachi pin with a pulsing ring, arcs to London, New York, Dubai, Berlin, Singapore, San Francisco, Toronto with a travelling dot on each, gentle sway. Colors come from the `--accent` and `--ink` tokens. The canvas sizes itself to the hero's object slot (ResizeObserver) at up to 2x pixel density.
+    - Loading: `Hero.astro` fetches the module with a dynamic `import()` after the `load` event, in `requestIdleCallback` (2s timeout; `setTimeout` where it is missing). The canvas and caption fade in after the first frame.
+    - Pausing: the animation runs only while the canvas is on screen (IntersectionObserver), the tab is visible (`visibilitychange`), and reduced motion is off. Under reduced motion it draws one still frame facing Karachi, and switches live if the setting changes.
+    - Desktop (1024px and up): right side behind the name, 640px at 1440, caption "Karachi · remote anywhere" under it (from `hero.globeCaption`; hidden from screen readers with the rest of the decorative slot, because the status line says the same). Mouse devices tilt it toward the cursor.
+    - Mobile: behind the text, about a third off the right edge, at 60% opacity (`--globe-opacity`). Touch screens drag it sideways: a drag starts anywhere in the hero inside the globe's circle except on links and buttons; the hero has `touch-action: pan-y pinch-zoom`, so vertical scrolling and zoom stay native.
+    - Orientation fix: the reference's yaw (-67°) and pitch (-0.32) put Karachi on the far side, so the pin never showed. Now yaw +67° and pitch +0.32: Karachi faces the viewer, a little above center (DECISIONS #27). Abdullah should judge whether this matches what he liked in the prototype.
+  - Cursor glow: a soft accent radial light (`--hero-glow`, `--hero-glow-size` 560px) that follows the mouse over the hero and fades out when it leaves. Only at 1024px and up, with `hover: hover` and `pointer: fine`, and never under reduced motion.
+  - Melt, `src/scripts/melt.ts` (from `docs/reference/melt-test.html`, Melt 7, Pull 0.15): SVG goo filter (`#hero-melt` in `Hero.astro`). On mouse devices only, the script adds an `aria-hidden` row of letter spans and visually hides the original "Abdullah"; the `<h1>` still reads "Abdullah Bin Nasir". Active while the mouse is over the name or within about a third of its height above or below; the filter is only applied while the effect is moving and is removed at rest. Blur scales with the font size. Off on touch screens, under reduced motion (checked on every move and on change), and with the flag off. No idle wave on touch (the spec allows off).
+  - Scroll reveals, `src/scripts/reveal.ts` (loaded from `BaseLayout.astro` when the flag is on): elements with `data-reveal` fade in, sharpen from a 6px blur, and rise 14px, once each (`--reveal-duration`, `--reveal-blur`, `--reveal-rise`). Only the reveal animates; hiding is instant. Targets: section headings, Now line and cards, About timeline and paragraph, Contact headline and sub-line (DECISIONS #29). Hidden only under `html.reveal`, which the script sets, and only under `prefers-reduced-motion: no-preference`.
+  - JavaScript: first load is about 4.2 KB gzipped (inline scripts 5.5 KB raw, 2.1 KB gzipped, now including the reveals; hero script 4.5 KB raw, 2.1 KB gzipped, with the melt and glow). The globe chunk loads later: 4.3 KB raw, 2.0 KB gzipped. Total about 6.2 KB gzipped, well under the 30 KB budget.
+
+## Verified (milestone 6)
+Checked in the built site from `dist/` in the in-app browser (Chromium). Another session's Astro preview server was holding the folder again, so the same kind of throwaway static server in the scratchpad was used (its temporary `launch.json` entry was reverted). The pane was hidden for most of the check, which stops or throttles animation frames (0 to 2 frames per second), so animations were judged from forced frames, not watched live.
+- `npx astro check`: 0 errors, 0 warnings, 1 hint (the same `execCommand` hint). `npm run build` passes. No console errors. No em dashes in `src/`.
+- 1440x900: globe canvas 640px at the right (705 to 1345px), behind the name; the Karachi pin shows between "a" and "h"; caption under it; the globe chunk is requested only after load. Moving the mouse over the name applied the filter (blur reached 7.3px at 240px type), letters shifted and swelled, and the goo fused neighbours. The glow turned on and followed the pointer. The `<h1>` keeps the same height (216px) with the letters in place. No horizontal scroll.
+- Pausing: with the hero on screen the canvas kept changing; scrolled to Now, it stayed identical across 600ms.
+- Reveals at 1440: the Now line and cards were hidden before scrolling, a forced frame mid-way showed them blurred, and a second later all were revealed at opacity 1.
+- 390x844: globe 351px, from x 156 to 507 (117px off the right edge), top 101px, behind the name and one-liner, opacity 0.6; caption and glow hidden; no melt letters (plain text); hero `touch-action: pan-y pinch-zoom`; no horizontal scroll. A right-to-left drag inside the globe turned it (arcs and pin moved to the far side) and did not scroll the page.
+- Reveals at 390: the Contact headline and sub-line reveal when scrolled into view; skipped straight past to the page end, they stay hidden until scrolled back to, as intended.
+- Found and fixed: the reference's orientation (above). A mouse drag over the hero in drag mode selected the name; a globe drag start now cancels the default (re-checked: nothing selected). Reveal elements also faded out when the script started; now hiding is instant.
+- Not checked: reduced motion (cannot be emulated here; the still frame, glow, melt, and reveal paths were reviewed in code, and the CSS rules sit under `no-preference`), a real touch drag on a phone (the emulated drag arrives as a mouse), the melt at a smooth frame rate (the pane was throttled, so it eased out slowly), the tab-hidden pause, Safari and Firefox, the no-JavaScript view, real devices.
 
 ## Verified (milestone 5)
 Checked in the built site from `dist/` in the in-app browser (Chromium). Another session's Astro preview server was holding the folder, so a throwaway static server in the scratchpad was used again (its temporary `launch.json` entry was reverted).
@@ -150,7 +174,7 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 - Screenshot alt text was written from what the screenshots show; Abdullah may want to reword it.
 
 ## Not started
-- Milestones 6 to 8.
+- Milestones 7 and 8.
 
 ## Placeholders to fill (from Abdullah)
 Rendered on the site where marked "visible". The rest are notes in the project files.
@@ -169,12 +193,16 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Accent color (periwinkle `#8fb3ff` for now).
 - A more relevant hero 3D object (research later).
 - About personal touch without a photo.
-- Where exactly the melt effect lives (hero name is the candidate).
+- Whether the melt stays (built on the hero name behind `features.melt`).
+- Globe orientation after the fix (Karachi now faces the viewer; the reference had it on the far side).
 
 ## Next useful action
-1. Abdullah reviews milestone 5 on the Vercel preview on his phone and laptop. To judge: the Now icons, the About timeline layout, each Beyond card's drawing and colors (pitch, controller, pass, book), the hover and tap reveals, the contact sizes and tile layout (four across plus a full-width résumé tile), and the footer.
-2. Milestone 6 (interactions) once milestone 5 is approved.
+1. Push milestone 6 so it reaches the Vercel preview (on Abdullah's go-ahead).
+2. Abdullah reviews milestone 6 on his laptop and phone. To judge: the globe's position and size on both, its orientation (Karachi facing the viewer), the cursor tilt and the phone drag, the glow strength, the melt feel and whether to keep it, and whether the scroll reveals feel subtle enough. Also worth a check with reduced motion on in the OS or DevTools (still globe, no glow, no melt, no reveals).
+3. Milestone 7 (quality pass) once milestone 6 is approved.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
 - Stacking fallback script in Firefox (no Firefox in this environment).
+- Milestone 6 effects under reduced motion, watched live (the setting cannot be emulated in the in-app browser).
+- A real touch drag of the globe (needs a phone).
