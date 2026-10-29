@@ -8,6 +8,14 @@ export const site = {
   description:
     'Abdullah Bin Nasir builds products with AI, end to end. Based in Karachi, open to full-time roles and collaborations.',
   lang: 'en',
+  locale: 'en_US',
+  /** Open Graph share image, made by `npm run og` (scripts/og-image.mjs). */
+  shareImage: {
+    src: '/og.png',
+    width: 1200,
+    height: 630,
+    alt: 'Abdullah, Karachi, Pakistan. I build products with AI, end to end.',
+  },
 } as const;
 
 export interface Resume {

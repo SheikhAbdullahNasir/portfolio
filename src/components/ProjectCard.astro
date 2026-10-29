@@ -85,8 +85,8 @@ const titleId = `project-${data.slug}`;
               class:list={['shots__image', i === 0 ? 'shots__image--main' : 'shots__image--over']}
               src={img.src}
               alt={img.alt}
-              widths={i === 0 ? [480, 870] : [320, 534]}
-              sizes={i === 0 ? '(min-width: 1024px) 40vw, 80vw' : '(min-width: 1024px) 20vw, 45vw'}
+              widths={i === 0 ? [480, 640, 870] : [320, 420, 534]}
+              sizes={i === 0 ? '(min-width: 1024px) 40vw, 80vw' : '(min-width: 1024px) 20vw, 55vw'}
             />
           ))}
         </div>

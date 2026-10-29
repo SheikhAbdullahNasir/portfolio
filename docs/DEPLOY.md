@@ -14,6 +14,7 @@
    - Edit or replace the existing `A` record for `@` with Vercel's value. Remove any other `A` record for `@` (for example GoDaddy parking or the current sample project), or traffic will split.
    - Edit the `www` `CNAME` to Vercel's value.
 4. Wait for DNS to update (often minutes, sometimes a few hours). Vercel shows "Valid Configuration" and issues HTTPS automatically.
+5. In `astro.config.mjs`, change `site` from the Vercel preview address to the primary domain (for example `https://yourdomain.com`), then push. The canonical link and the share image URLs come from it. Check the share card afterwards with a link preview tool (for example the LinkedIn Post Inspector).
 
 ## 3. Notes
 - The domain currently hosts a sample project. Pointing it to Vercel replaces that site. Move the sample elsewhere first if you still need it.

@@ -6,6 +6,8 @@ import { site, resume } from '../data/site';
 import { topLabel, navSections } from '../data/nav';
 import { getProjects, projectNumber } from '../lib/projects';
 
+// On other pages (the 404 page) the monogram goes home instead of to the top.
+const onHome = Astro.url.pathname === '/';
 const projectCount = (await getProjects()).length;
 const sectionLabels = JSON.stringify(
   Object.fromEntries([['top', topLabel], ...navSections.map((s) => [s.id, s.label])]),
@@ -29,7 +31,7 @@ const sizerLabels = [
   data-section-labels={sectionLabels}
   data-project-total={projectCount}
 >
-  <a class="pill__monogram" href="#top" aria-label="Back to top">
+  <a class="pill__monogram" href={onHome ? '#top' : '/'} aria-label={onHome ? 'Back to top' : 'Home'}>
     <span aria-hidden="true">{site.monogram}</span>
   </a>
 
@@ -262,8 +264,9 @@ const sizerLabels = [
       render();
     }, band);
 
+    // Only on the home page: elsewhere the footer is in view without any section.
     const footer = document.querySelector('.site-footer');
-    if (footer) {
+    if (footer && document.getElementById(lastId)) {
       new IntersectionObserver(([entry]) => {
         atPageEnd = entry?.isIntersecting ?? false;
         render();

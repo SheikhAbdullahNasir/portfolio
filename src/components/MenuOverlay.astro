@@ -3,8 +3,10 @@
 // Esc closes it, focus stays inside while open, and the page behind does not scroll.
 import Placeholder from './Placeholder.astro';
 import { resume } from '../data/site';
-import { navSections } from '../data/nav';
+import { navSections, sectionHref } from '../data/nav';
 import { contact } from '../data/contact';
+
+const onHome = Astro.url.pathname === '/';
 ---
 
 <dialog id="site-menu" class="menu" aria-label="Menu" data-menu>
@@ -21,7 +23,7 @@ import { contact } from '../data/contact';
         {
           navSections.map((section) => (
             <li>
-              <a class="menu__link" href={`#${section.id}`} data-menu-link>
+              <a class="menu__link" href={sectionHref(section.id, onHome)} data-menu-link>
                 <span class="menu__number" aria-hidden="true">
                   {section.number}
                 </span>

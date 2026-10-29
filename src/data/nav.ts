@@ -11,6 +11,9 @@ export interface NavSection {
   number: string;
 }
 
+/** Link to a home page section: a plain anchor on the home page, `/#id` on other pages. */
+export const sectionHref = (id: string, onHome: boolean) => (onHome ? `#${id}` : `/#${id}`);
+
 /** Pill label while the hero is in view. */
 export const topLabel = 'Abdullah Bin Nasir';
 

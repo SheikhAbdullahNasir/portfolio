@@ -1,9 +1,9 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 6 approved, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (milestone 7 done, waiting for review, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 6 (interactions: globe, cursor glow, melt, scroll reveals) is done and approved by Abdullah (2026-10-29), including two rounds of review fixes. The melt stays (DECISIONS #34). Next: milestone 7 (quality pass).
+Milestone 7 (quality pass) is done and waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Committed locally, not pushed yet. Next after approval: milestone 8 (custom domain).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -79,6 +79,49 @@ Milestone 6 (interactions: globe, cursor glow, melt, scroll reveals) is done and
   - Melt, `src/scripts/melt.ts` (from `docs/reference/melt-test.html`; Melt 9, Pull 0.06 after review, were 7 and 0.15; values in `meltSettings`; kept, DECISIONS #34): SVG goo filter (`#hero-melt` in `Hero.astro`). On mouse devices only, the script adds an `aria-hidden` row of letter spans and visually hides the original "Abdullah"; the `<h1>` still reads "Abdullah Bin Nasir". Active while the mouse is over the name or within about a third of its height above or below; the filter is only applied while the effect is moving and is removed at rest. Blur scales with the font size. Off on touch screens, under reduced motion (checked on every move and on change), and with the flag off. No idle wave on touch (the spec allows off).
   - Scroll reveals, `src/scripts/reveal.ts` (loaded from `BaseLayout.astro` when the flag is on): elements with `data-reveal` fade in, sharpen from a 6px blur, and rise 14px (`--reveal-duration`, `--reveal-blur`, `--reveal-rise`). Review fix (DECISIONS #30): they replay each time they enter from below while scrolling down, never while scrolling up. An element resets only once it is fully below the screen; one reached while scrolling up (skipped past by a menu jump) appears without the animation. Only the reveal animates; hiding is instant. Targets: section headings, Now line and cards, About timeline and paragraph, Contact headline and sub-line (DECISIONS #29). Hidden only under `html.reveal`, which the script sets, and only under `prefers-reduced-motion: no-preference`.
   - JavaScript after the review fixes: first load is about 4.4 KB gzipped (inline scripts 6.2 KB raw, 2.3 KB gzipped, including the reveals; hero script 4.4 KB raw, 2.1 KB gzipped, with the melt and glow). The globe chunk loads later: 5.2 KB raw, 2.4 KB gzipped. Total about 6.7 KB gzipped, well under the 30 KB budget.
+
+- **Milestone 7 quality pass** (waiting for review; DECISIONS #35 to #40):
+  - Meta in `BaseLayout.astro`: canonical link, Open Graph (type, site name, locale, title, description, URL, image with size, type, and alt), `twitter:card` large image, `noindex` prop (used by the 404 page). Absolute URLs come from `site` in `astro.config.mjs` (the Vercel address until launch; DEPLOY.md now says to change it). `public/robots.txt` allows everything.
+  - Share image `public/og.png` (1200x630): monogram badge, "Karachi, Pakistan", "Abdullah", the one-liner, and a still frame of the globe facing Karachi. Made by `npm run og` (`scripts/og-image.mjs`, headless Chrome, site fonts, tokens, and hero copy), which also makes `apple-touch-icon.png` (180px, badge on the page background) and `favicon.ico` (32px). Rerun it after changing the hero copy, tokens, or favicon.
+  - Favicon `public/favicon.svg`: the pill's badge, with the real Bricolage ExtraBold "A" outline as a path.
+  - 404 page `src/pages/404.astro`: huge "404" with the accent dot, "This page does not exist.", a short line, Back to home and Get in touch. Copy is a draft in `src/data/notFound.ts` and CONTENT.md. Off the home page, menu links point to `/#section`, the monogram to `/` ("Home"), and the pill label stays "Abdullah Bin Nasir" (the page-end rule only applies on the home page). `.button` styles moved from `Hero.astro` to `global.css`.
+  - Accessibility fixes: the Events pass card is now labelled "DEV EVENTS · KARACHI Abdullah Bin Nasir" (it was only the attendee name); the stack's focus fix also handles a link that is still off screen (at 390px "Visit live site" ended up under the next card); the melt no longer splits the name under reduced motion.
+  - Performance fixes: globe dots batched into 16 brightness steps (about 15 to 30% less main-thread time at 4x CPU); melt letters swapped in after the name's font loads (desktop CLS 0.034 to 0); DocScout screenshots get a middle size (640 and 420) and a closer mobile `sizes` for the overlay (55vw).
+  - JavaScript at first load is unchanged in size (about 4.4 KB gzipped plus the 2.4 KB lazy globe chunk), well under the 30 KB budget.
+
+## Verified (milestone 7)
+Checked on the built site (`dist/`) through a throwaway static server in the scratchpad with gzip, like Vercel (another session's Astro preview server held the folder again). Lighthouse 13.6.0 from the command line with headless Chrome; other checks in the in-app browser and in headless Chrome driven over the DevTools Protocol, which can emulate reduced motion, touch, JavaScript off, and CPU throttling.
+- `npx astro check` 0 errors, 0 warnings, 1 hint (the same `execCommand` hint). `npm run build` passes (2 pages). No em dashes in `src/`, `scripts/`, `public/`, or CONTENT.md.
+- **Lighthouse, home page, mobile (default simulated throttling)**, six runs after the fixes: Performance 91, 98, 100, 94, 95, 87 (median about 95); Accessibility 100, Best Practices 100, SEO 100 in every run. FCP and LCP 1.0 to 1.7s, TBT 70 to 440ms, CLS 0, Speed Index 2.4 to 3.0s. Before the fixes, one run: 99 / 100 / 100 / 100.
+  - The spread is this machine, not the page: the first style-and-layout task on identical builds took 391 to 983ms between runs (other sessions were running). The live Vercel site (milestone 6) measured 81, 93, 96 the same way. PageSpeed Insights on the deployed site will give a cleaner number (see below).
+- **Lighthouse, home page, desktop:** 100 / 100 / 100 / 100 twice. FCP and LCP 0.3s, TBT 0 to 20ms, CLS 0 (was 0.034 before the melt fix).
+- **Lighthouse, 404 page, mobile:** 100 / 100 / 100 / 63. SEO 63 only because the page is `noindex` on purpose. (Lighthouse refuses a 404 status, so it ran on `/404.html`.) The server returns status 404 with this page for unknown paths.
+- Harsher check (real "devtools" throttling instead of simulated, before the fixes): Performance 65, FCP 3.4s, TBT 740ms, CLS 0 even with fonts arriving at 4.7s. The two costs: the first layout of the whole long page (about 140ms unthrottled, mostly cold font and text work; a warm relayout takes 4ms) and the globe animation (at 4x CPU it used 85 to 90% of the main thread before batching, 65 to 85% after).
+- Accessibility audit (Lighthouse covers part; the rest by script and by hand):
+  - Headings: one `h1` (hero name, reads "Abdullah Bin Nasir"), `h2` per section, `h3` per card; no skipped levels. 404: one `h1`.
+  - Landmarks: `header` with `nav "Main"`, `main`, `footer`, the menu `dialog` with `nav "Sections"`; every section and card article has an accessible name.
+  - Labels: every link and button has a name; icon-only buttons have `aria-label`; social tiles read name, handle, "(opens in a new tab)" with spaces.
+  - Alt text: the two DocScout screenshots have descriptive alt; canvas, globe caption, melt letters, and decorative SVG are `aria-hidden`; the share image has alt in its meta.
+  - Contrast: a script checked every visible text element against its real background (alpha included), with all Beyond cards open and reveals shown, at 1440 and 390. Every one passes 4.5:1 (3:1 for large text) with at least 0.5 to spare.
+  - Focus order (real Tab presses in headless Chrome, 1440x900, 390x844, 360x640, 1280x680): skip link, monogram, Menu, See work, Get in touch, Visit live site, More about cricket, More about gaming, email, Copy email, four social tiles, Back to top. Every stop shows the 2px accent ring and, once scrolled, is on screen and not covered.
+  - Touch targets: no link or button under 44px at 390.
+  - Deep links: loading `/#about` lands the heading below the pill and focuses the section (desktop and mobile).
+- **Reduced motion, emulated in real Chrome** (closes the milestone 4 to 6 gap): globe draws one still frame and stops; no reveal hidden; covered card scale `none` and dim 0; no running animations; glow off; name stays plain text; `scroll-behavior: auto`. Without reduced motion the same checks show the globe animating, 13 reveals waiting, scale 0.94 and dim 0.3.
+- **JavaScript off** (emulated): all content readable; Menu button and Beyond "+" buttons hidden; on touch screens the Beyond reveal lines show. Hidden text is only the by-design breakpoint variants (short vs full summary, mobile hides why and stack) and the desktop hover reveals.
+- 404 at 1440 and 390: layout as intended, no horizontal scroll, buttons 52px, the menu's Contact link goes to `/#contact`.
+- Share image, touch icon, and favicon looked at as images.
+
+## Not checked (milestone 7)
+- Screen readers (NVDA, VoiceOver): only the accessibility tree and names were inspected.
+- Real phones and laptops, Safari, Firefox (no Firefox or Safari here). The stack fallback script in Firefox is still unchecked.
+- A real touch drag of the globe and the momentum glide by feel.
+- Lighthouse on the deployed site: these changes are not pushed yet. To run it yourself after pushing: open https://pagespeed.web.dev, paste the Vercel URL, and read the Mobile tab (it runs on Google's machines, so it is steadier than a laptop). Or in Chrome: open the site in an Incognito window, DevTools, Lighthouse tab, Mode "Navigation", Device "Mobile", all categories, "Analyze page load". Run it two or three times and take the median.
+- The share card as LinkedIn, X, or WhatsApp actually render it (needs the deployed site; LinkedIn Post Inspector or a test post).
+- The voice-control "label in name" case: the monogram shows "A" but is named "Back to top". Left as is.
+
+## Ideas, not done (need Abdullah's call)
+- Run the globe at 30 frames per second while idle (full rate while dragging): would roughly halve its cost on slow phones, but changes how the approved sway and travelling dots feel.
+- `content-visibility: auto` on the lower sections to shorten the first layout; risky with the sticky stack, anchor jumps, and reveals, so not tried.
 
 ## Milestone 6 approved (Abdullah, 2026-10-29)
 - The 220px glow and the gentler melt feel right; keep the melt. Abdullah raised Melt from 7 to 9 himself (commit `2e59080`). Milestone 6 is done.
@@ -189,12 +232,12 @@ Checked in the built site (`npm run preview`; another session's dev server was h
 
 ## Not verified yet
 - Real-device testing (needs Abdullah's phone and laptop).
-- Lighthouse scores (milestone 7).
-- Font layout shift: fallbacks are not size-matched yet. Revisit in milestone 7.
+- Lighthouse on the deployed site (local numbers are in "Verified (milestone 7)").
+- Font layout shift: measured in milestone 7 (CLS 0 on mobile and desktop, also with fonts arriving late), so size-matched fallbacks are not needed for now.
 - Screenshot alt text was written from what the screenshots show; Abdullah may want to reword it.
 
 ## Not started
-- Milestones 7 and 8.
+- Milestone 8.
 
 ## Placeholders to fill (from Abdullah)
 Rendered on the site where marked "visible". The rest are notes in the project files.
@@ -207,6 +250,7 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Résumé PDF (visible: set `href` in `src/data/site.ts` once `public/Abdullah-Bin-Nasir-Resume.pdf` exists).
 - Skills to list, if any (no skills section until decided).
 - Beyond the code copy needs edits later (Abdullah to provide).
+- 404 page copy and share image alt text are Claude's drafts (CONTENT.md), waiting for approval.
 
 ## Open design questions (do not block the build)
 - Final display font (Bricolage Grotesque is provisional).
@@ -215,10 +259,10 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - About personal touch without a photo.
 
 ## Next useful action
-1. Milestone 7 (quality pass): accessibility audit, Lighthouse, mobile and desktop checks, 404 page, meta and favicon. Worth including the milestone 6 checks that could not be run here: reduced motion watched live, a real phone drag of the globe, Safari and Firefox.
+1. Abdullah reviews milestone 7: the 404 page, share image, favicon, and the draft copy. Then push, run PageSpeed Insights on the Vercel URL, and check the share card with LinkedIn Post Inspector.
+2. Milestone 8 (custom domain), including changing `site` in `astro.config.mjs`.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
 - Stacking fallback script in Firefox (no Firefox in this environment).
-- Milestone 6 effects under reduced motion, watched live (the setting cannot be emulated in the in-app browser).
 - A real touch drag of the globe (needs a phone).

@@ -37,19 +37,31 @@ export function initMelt(
     row.append(el);
     return { el, center: 0, shift: 0, scale: 1 };
   });
-  source.classList.add('visually-hidden');
-  source.before(row);
-
   const measure = () => {
     for (const l of letters) l.center = l.el.offsetLeft + l.el.offsetWidth / 2;
   };
-  measure();
-  window.addEventListener('resize', measure);
-  document.fonts?.ready.then(measure);
 
   const allowed = window.matchMedia(
     '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
   );
+
+  // The letters replace the kerned text only while the effect is allowed; under
+  // reduced motion the plain text shows (DECISIONS #28).
+  const mount = () => {
+    if (allowed.matches) {
+      source.classList.add('visually-hidden');
+      source.before(row);
+      measure();
+    } else {
+      row.remove();
+      source.classList.remove('visually-hidden');
+    }
+  };
+  // Swapped in only once the name's font has loaded: letters added before that would
+  // each move when the web font replaces the fallback (a layout shift).
+  const fontLoaded = document.fonts?.load(getComputedStyle(name).font) ?? Promise.resolve();
+  fontLoaded.catch(() => {}).then(mount);
+  window.addEventListener('resize', measure);
 
   let pointerX = 0;
   let active = false;
@@ -85,6 +97,7 @@ export function initMelt(
       frame = 0;
       reset();
     }
+    mount();
   });
 
   function tick() {

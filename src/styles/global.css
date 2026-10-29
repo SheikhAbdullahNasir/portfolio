@@ -92,6 +92,39 @@ a {
   transform: none;
 }
 
+/* Pill buttons (hero, 404 page). */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 26px;
+  border-radius: var(--radius-pill);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.button--primary {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.button--primary:hover {
+  background: #ffffff;
+}
+
+.button--secondary {
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.button--secondary:hover {
+  border-color: var(--muted);
+}
+
 /* Scroll reveals (src/scripts/reveal.ts). Hidden only once the script has set
    html.reveal, and never under reduced motion. */
 @media (prefers-reduced-motion: no-preference) {

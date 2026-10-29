@@ -28,6 +28,7 @@ const CITIES: [number, number][] = [
   [43.7, -79.4], // Toronto
 ];
 const ARC_STEPS = 48;
+const DOT_SHADES = 16; // brightness steps for the dots, from the edge to the front
 // Turns Karachi toward the viewer. (The reference used -67°, which put Karachi on
 // the far side; a point at longitude L faces the viewer at a yaw of +L.)
 const HOME_YAW = (KARACHI[1] * Math.PI) / 180;
@@ -87,6 +88,13 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
   const accent = hexToRgb(styles.getPropertyValue('--accent'), '143,179,255');
   const ink = hexToRgb(styles.getPropertyValue('--ink'), '237,235,229');
   const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // One fill style per brightness step (see the dots in draw()).
+  const dotStyles = Array.from(
+    { length: DOT_SHADES },
+    (_, shade) => `rgba(${ink},${(0.12 + (0.55 * shade) / (DOT_SHADES - 1)).toFixed(3)})`,
+  );
+  const dotPaths: Path2D[] = [];
 
   const home = latLon(...KARACHI);
   const arcs = CITIES.map(([lat, lon]) => arc(home, latLon(lat, lon)));
@@ -193,14 +201,21 @@ export function initGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): () 
     ctx!.arc(center, center, radius * 1.25, 0, Math.PI * 2);
     ctx!.fill();
 
-    // Dots, brighter toward the viewer; the far side is skipped.
+    // Dots, brighter toward the viewer; the far side is skipped. Dots are grouped into
+    // DOT_SHADES brightness steps and each step is filled once, so a frame costs a dozen
+    // fills instead of one per dot (a big saving on slow phones).
+    for (let shade = 0; shade < DOT_SHADES; shade++) dotPaths[shade] = new Path2D();
     for (const p of points) {
       const q = project(p);
       if (q[2] < -0.05) continue;
-      ctx!.fillStyle = `rgba(${ink},${(0.12 + 0.55 * q[2]).toFixed(3)})`;
-      ctx!.beginPath();
-      ctx!.arc(q[0], q[1], 1.1 + q[2] * 0.6, 0, Math.PI * 2);
-      ctx!.fill();
+      const shade = Math.min(DOT_SHADES - 1, Math.max(0, Math.round(q[2] * (DOT_SHADES - 1))));
+      const r = 1.1 + q[2] * 0.6;
+      dotPaths[shade].moveTo(q[0] + r, q[1]);
+      dotPaths[shade].arc(q[0], q[1], r, 0, Math.PI * 2);
+    }
+    for (let shade = 0; shade < DOT_SHADES; shade++) {
+      ctx!.fillStyle = dotStyles[shade];
+      ctx!.fill(dotPaths[shade]);
     }
 
     // Arcs, each with a travelling dot

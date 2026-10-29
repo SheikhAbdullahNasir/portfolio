@@ -164,7 +164,9 @@ const timelines = projects.map((_, i) => `--stack-${i}`);
     const stickyTop = (el: HTMLElement) => parseFloat(getComputedStyle(el).top) || 0;
 
     // A focused link in a covered card would sit under the next card. Scroll back to
-    // where that card has just stuck and nothing covers it yet.
+    // where that card has just stuck and nothing covers it yet. Also when the link is
+    // still off screen: the browser's own scroll to it runs after this and could stop
+    // where the next card already covers it (found on mobile in milestone 7).
     stack.addEventListener('focusin', (event) => {
       const target = event.target as HTMLElement;
       const card = target.closest<HTMLElement>('[data-stack-card]');
@@ -172,7 +174,9 @@ const timelines = projects.map((_, i) => `--stack-${i}`);
       const next = cards[i + 1];
       const marker = markers[i];
       if (!card || !next || !marker) return;
-      if (next.getBoundingClientRect().top < target.getBoundingClientRect().bottom) {
+      const box = target.getBoundingClientRect();
+      const offscreen = box.top < 0 || box.bottom > window.innerHeight;
+      if (offscreen || next.getBoundingClientRect().top < box.bottom) {
         const y = marker.getBoundingClientRect().top + window.scrollY - stickyTop(card);
         window.scrollTo({ top: y, behavior: 'instant' });
       }

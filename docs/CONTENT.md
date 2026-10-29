@@ -115,6 +115,18 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - "© 2026 Abdullah Bin Nasir" (use the current year)
 - "Download resume PDF", "Back to top"
 
+## 404 page (draft by Claude, milestone 7; not approved yet)
+- Browser title: "Page not found"
+- Big number: "404"
+- Heading: "This page does not exist."
+- Text: "The link may be old or mistyped. Everything I have built so far is on the home page."
+- Buttons: "Back to home", "Get in touch"
+
+## Share image (draft by Claude, milestone 7; not approved yet)
+- `public/og.png` reuses the hero copy: "Karachi, Pakistan", "Abdullah", "I build products with AI, end to end."
+- Alt text: "Abdullah, Karachi, Pakistan. I build products with AI, end to end."
+- Title and description for search and link previews: the site name and the site description above.
+
 ## Still missing (show as placeholders)
 - GitHub repository links for DocScout and Patient Voice Agent.
 - DocScout stack (verify from its repo).

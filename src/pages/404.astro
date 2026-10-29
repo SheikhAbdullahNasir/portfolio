@@ -1,0 +1,87 @@
+---
+// 404 page in the site's style: the pill nav and footer from the base layout, a huge
+// number set like the hero name, and two ways back. Vercel serves it for unknown paths.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { notFound } from '../data/notFound';
+---
+
+<BaseLayout title={`${notFound.title} · ${site.name}`} noindex>
+  <section id="top" class="lost" aria-labelledby="lost-heading" tabindex="-1">
+    <p class="lost__code" aria-hidden="true">
+      {notFound.code}<span class="lost__dot"></span>
+    </p>
+    <h1 id="lost-heading" class="lost__heading">{notFound.heading}</h1>
+    <p class="lost__text">{notFound.text}</p>
+    <div class="lost__actions">
+      <a class="button button--primary" href={notFound.primaryCta.href}>
+        {notFound.primaryCta.label}
+      </a>
+      <a class="button button--secondary" href={notFound.secondaryCta.href}>
+        {notFound.secondaryCta.label}
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lost {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    max-width: var(--content-max);
+    min-height: 100svh;
+    margin-inline: auto;
+    padding: calc(var(--nav-offset) + 24px) var(--gutter) 64px;
+  }
+
+  .lost:focus {
+    outline: none;
+  }
+
+  /* Decorative: the heading says the same thing in words. */
+  .lost__code {
+    display: flex;
+    align-items: baseline;
+    gap: 0.06em;
+    font-family: var(--font-display);
+    font-weight: var(--weight-extrabold);
+    font-size: clamp(7rem, 32vw, 18rem);
+    line-height: 0.8;
+    letter-spacing: -0.035em;
+  }
+
+  /* The hero's status dot, scaled up as a full stop. */
+  .lost__dot {
+    flex: none;
+    width: 0.12em;
+    height: 0.12em;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0.05em rgba(143, 179, 255, 0.18);
+    /* On the baseline, its ring clear of it, like the hero dot. */
+    transform: translateY(-0.05em);
+  }
+
+  .lost__heading {
+    margin-top: 12px;
+    max-width: 22ch;
+    text-wrap: balance;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: 1.1;
+  }
+
+  .lost__text {
+    max-width: 48ch;
+    color: var(--muted);
+    font-size: 1.0625rem;
+  }
+
+  .lost__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+  }
+</style>

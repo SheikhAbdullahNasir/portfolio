@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Placeholder "A" monogram. Final favicon: milestone 7. -->
+  <!-- "A" monogram: the pill's round badge (--ink circle, --bg letter). The letter is the
+       Bricolage Grotesque ExtraBold "A" outline, so it needs no font. -->
   <circle cx="32" cy="32" r="32" fill="#edebe5"/>
-  <text x="32" y="44" text-anchor="middle" font-family="system-ui, sans-serif" font-size="34" font-weight="800" fill="#141414">A</text>
+  <path fill="#141414" transform="translate(16.9 46) scale(0.0424 -0.0424)" d="M14 0L238 660L474 660L698 0L522 0L364 534L348 534L190 0ZM147 124L147 232L589 232L589 124Z"/>
 </svg>
