@@ -11,7 +11,10 @@ Every placeholder is filled (résumé and the Patient Voice Agent "why" line, 20
 - There was no sitemap before (`/sitemap.xml` returned 404). Added `src/pages/sitemap.xml.ts` (lists `/`; the 404 page is left out) and replaced `public/robots.txt` with `src/pages/robots.txt.ts`, which adds the `Sitemap:` line. Both are built from `site`, with no new dependency (`@astrojs/sitemap` would be one).
 - Share image not rebuilt: it shows no URL; only its address in the meta tags changed.
 - Checked in the build: canonical `https://www.abdullahbinnasir.site/`, `og:url` and `og:image` on the new domain on both pages, `sitemap.xml` and `robots.txt` correct, no Vercel address left in `dist/`, `src/`, `scripts/`, or the config. `npx astro check` 0 errors, 0 warnings; build passes.
-- Checked on the live site after the push: see the entry below.
+- Checked on the live site after the push (commit `beb0442`, deployed in about 20 seconds):
+  - Canonical, `og:url`, and `og:image` on `https://www.abdullahbinnasir.site`. `sitemap.xml` (application/xml), `robots.txt` with the `Sitemap:` line, `og.png`, the résumé PDF (application/pdf), `favicon.svg`, `favicon.ico`, and `apple-touch-icon.png` all return 200. An unknown path returns 404 with the 404 page (`noindex`). The apex redirects to www for any path (308).
+  - Lighthouse 13.6.0 from this machine on the live domain: mobile 97 / 100 / 100 / 100 and 96 / 100 / 100 / 100 (FCP 1.2 to 1.5s, TBT 70 to 190ms, CLS 0); desktop 100 / 100 / 100 / 100 (FCP 0.5s, CLS 0). Canonical and robots.txt audits pass.
+- Not checked: PageSpeed Insights (Google's machines), the share card in LinkedIn, X, or WhatsApp, Google Search Console.
 
 ## Live site
 - **https://www.abdullahbinnasir.site** (since 2026-10-29). The apex and `http://` redirect to it (308). Vercel deploys every push to `main`; the project address https://portfolio-murex-two-31.vercel.app/ still works. Details in `docs/DEPLOY.md`.
