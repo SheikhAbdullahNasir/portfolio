@@ -3,11 +3,11 @@
 _Last updated 2026-10-29 (milestone 2 content model, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 2 (content model) is done locally and waiting for Abdullah's review. Next: milestone 3 (nav and hero, static).
+Milestone 2 (content model) is done, committed, and pushed. Next: milestone 3 (nav and hero, static).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
-- Milestone 1 is deployed there (commit `5e63cde`). Milestone 2 is not pushed yet.
+- Milestone 2 is pushed (commit `4f94692`). The home page looks the same as milestone 1 because sections are still empty; `/content-preview` is dev-only and not deployed.
 
 ## Done
 - Content plan and copy (`docs/CONTENT.md`).
@@ -19,7 +19,7 @@ Milestone 2 (content model) is done locally and waiting for Abdullah's review. N
   - Self-hosted Fontsource variable fonts (Bricolage Grotesque, Geist, Geist Mono).
   - Base layout `src/layouts/BaseLayout.astro` with skip link and empty header and footer slots.
   - Home page with an empty hero and empty sections `#work`, `#now`, `#about`, `#beyond`, `#contact`.
-- **Milestone 2 content model** (local, not committed):
+- **Milestone 2 content model** (commit `4f94692`, pushed):
   - Projects collection: schema in `src/content.config.ts`, entries in `src/content/projects/docscout.md` and `patient-voice-agent.md`. Fields as in BUILD_SPEC 2, plus `mobileSummary` (CONTENT.md has a mobile summary for each project) and an optional `note` on each screenshot. `visual` is either `screenshots` (images through Astro's `image()` helper) or `diagram` (steps).
   - DocScout screenshots live in `src/assets/projects/docscout/` so Astro can optimize them (served as WebP). `docscout-home.png` is Abdullah's fresh retake (2026-10-29, 870x680, no browser chrome, no text selection; no crop needed). `docscout-issue.jpg` is copied from `docs/reference/assets/`. The old home screenshot with the selection was deleted from `docs/reference/assets/`.
   - Card color names in `src/data/palette.ts` (green, blue, burgundy, gold, plum), matching the `--card-*` tokens. The schema only accepts these names.
@@ -70,8 +70,7 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah reviews milestone 2 (run `npm run dev`, open http://localhost:4321/content-preview) and commits it.
-2. Start milestone 3: smart pill nav, menu overlay with full keyboard support, hero text and buttons.
+1. Start milestone 3: smart pill nav, menu overlay with full keyboard support, hero text and buttons.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
