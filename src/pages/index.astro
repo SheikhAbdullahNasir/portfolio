@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, sections } from '../data/site';
+---
+
+<BaseLayout>
+  <!-- Hero: milestone 3 (text) and 6 (globe, glow, melt). -->
+  <section id="top" class="section section--hero" aria-label="Introduction">
+    <h1 class="visually-hidden">{site.name}</h1>
+  </section>
+
+  {
+    sections.map((section) => (
+      <section id={section.id} class="section" aria-labelledby={`${section.id}-heading`}>
+        <h2 id={`${section.id}-heading`} class="section__heading">
+          {section.label}
+        </h2>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .section {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: 96px var(--gutter);
+    border-top: 1px solid var(--line);
+  }
+
+  .section--hero {
+    min-height: 100svh;
+    border-top: 0;
+  }
+
+  .section__heading {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: var(--weight-extrabold);
+  }
+</style>

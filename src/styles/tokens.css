@@ -1,0 +1,65 @@
+/*
+ * Design tokens. Starting values from docs/BUILD_SPEC.md section 3.
+ * Every value here is a starting direction; change it here, not in components.
+ */
+:root {
+  /* Base palette */
+  --bg: #141414;
+  --surface: #1c1c1b;
+  --ink: #edebe5;
+  --muted: #a19f97;
+  --line: rgba(237, 235, 229, 0.1);
+  --accent: #8fb3ff;
+
+  /* Project card palette, cycled in project order */
+  --card-green: #15332b;
+  --card-green-ink: #e8f1ec;
+  --card-green-muted: #b7d3c6;
+
+  --card-blue: #162a4a;
+  --card-blue-ink: #e6edf8;
+  --card-blue-muted: #b3c4e3;
+
+  --card-burgundy: #3d1c24;
+  --card-burgundy-ink: #f6e6ea;
+  --card-burgundy-muted: #d9b7bf;
+
+  --card-gold: #45370f;
+  --card-gold-ink: #f6ecd2;
+  --card-gold-muted: #dccb9e;
+
+  --card-plum: #33203a;
+  --card-plum-ink: #f1e6f4;
+  --card-plum-muted: #cdb4d4;
+
+  /* Fonts (provisional: see docs/PROJECT_STATE.md open questions) */
+  --font-display: 'Bricolage Grotesque Variable', 'Arial Narrow', system-ui, sans-serif;
+  --font-text: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* Radius */
+  --radius-project: 28px;
+  --radius-card: 22px; /* 20 to 24px range for other cards */
+  --radius-pill: 999px;
+
+  /* Layout */
+  --gutter: 20px; /* mobile side padding, 16 to 20px */
+  --content-max: 1440px;
+  --touch-target: 44px;
+
+  /* Focus */
+  --focus-ring: 2px solid var(--accent);
+  --focus-offset: 3px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 80px; /* desktop side padding */
+  }
+}
