@@ -1,6 +1,6 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 7 done, waiting for review, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (repo cleaned up before going public, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
 Every placeholder is filled (résumé and the Patient Voice Agent "why" line, 2026-10-29). Milestone 7 (quality pass) is done and pushed (commit `37d8600`), waiting for Abdullah's review: accessibility audit, 404 page, meta tags and share image, final favicon, performance check with Lighthouse. Follow-up pushed as its own commit so the two can be compared: the globe at 30 fps while idle (DECISIONS #41). Milestone 8 (launch): Abdullah connected the domain; the site is live at https://www.abdullahbinnasir.site and `site`, canonical, Open Graph, sitemap, and robots.txt now use it (DECISIONS #44).
@@ -22,7 +22,7 @@ Every placeholder is filled (résumé and the Patient Voice Agent "why" line, 20
 
 ## Done
 - Content plan and copy (`docs/CONTENT.md`).
-- Design direction explored and chosen as a starting point (prototypes on a Claude Design canvas named "Portfolio V2 Directions", private to Abdullah; key code copied into `docs/reference/`).
+- Design direction explored and chosen as a starting point (the full prototypes are not in this repo; key code copied into `docs/reference/`).
 - Stack and hosting chosen (`docs/DECISIONS.md` #18, #19).
 - **Milestone 1 scaffold** (commit `5e63cde`, deployed to Vercel):
   - Astro 7.4.4 + TypeScript 6 (strict preset), static output. Node 22.23.4 or newer (`package.json` `engines`).
@@ -262,10 +262,17 @@ None. The built pages (`index.html`, `404.html`) contain no placeholder (checked
 
 Notes, not shown on the site:
 - Patient Voice Agent GitHub link: the repo is private for now, so the card has no GitHub button and no placeholder (`githubPrivate: true` in `patient-voice-agent.md`). When the repo goes public, replace that line with `github: <url>`; the button then appears on its own.
-- Patient Voice Agent headline confirmation (current text is Claude's draft; comment in the file).
-- Patient Voice Agent flow diagram check against the repo, and dashboard status (comment in the file).
+- Patient Voice Agent flow diagram: keep it matching the repo. Headline confirmed and dashboard status resolved (works, left off the diagram on purpose), DECISIONS #46.
 - Skills to list, if any (no skills section until decided).
 - Beyond the code copy needs edits later (Abdullah to provide).
+
+## Repo cleanup before going public (Abdullah, 2026-10-29)
+- Scanned the working tree and all history (text files, commit messages, résumé text, image and PDF metadata): no secrets or keys, no `.env` ever committed, no mention of an evaluation or job test.
+- AGENTS.md rule 2 now has one exception: the résumé PDF, kept exactly as is (DECISIONS #45).
+- Patient Voice Agent headline confirmed; dashboard works and stays off the diagram on purpose (DECISIONS #46). "Honesty notes" in CONTENT.md are now neutral "Claims" guidance; the open notes are a short roadmap.
+- DECISIONS reasons reworded neutrally (no third-person notes); design-canvas mentions shortened to "the full prototypes are not in this repo".
+- Older wording of these notes remains in git history.
+- Checked: `npx astro check` 0 errors, 0 warnings; build passes. Only docs and comments changed; no copy shown on the site changed.
 
 ## Résumé and last placeholder (Abdullah, 2026-10-29)
 - Résumé: `public/Abdullah_Bin_Nasir_Resume.pdf`, added by Abdullah and used exactly as is (underscores, not the hyphenated name the docs planned; `resume` in `src/data/site.ts`, DEPLOY.md updated). Linked from the pill (desktop), the menu, the contact tile, the contact "Download PDF" link, and the footer "Download resume PDF". The pill, menu, and tile open it in a new tab (with a hidden "(opens in a new tab)"); the two download links download it and open it in a new tab where a browser ignores `download`.

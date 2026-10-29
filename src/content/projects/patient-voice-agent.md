@@ -4,7 +4,6 @@ slug: patient-voice-agent
 order: 2
 status: Working prototype
 color: blue
-# Headline is Claude's draft; Abdullah to confirm or rewrite.
 headline: A voice agent that handles patient intake over the phone.
 summary: A patient calls and talks to Maya, an AI voice coordinator, who registers them or updates their record. The backend checks details like phone, date of birth, and zip before anything is saved.
 mobileSummary: Callers talk to Maya, who registers or updates their record. 47 tests passing.
@@ -23,7 +22,8 @@ stack:
 # GitHub button; when it goes public, replace `githubPrivate: true` with `github: <url>`.
 links:
   githubPrivate: true
-# Verify these steps against the repo before launch. Add a dashboard step only if Abdullah confirms it works.
+# Keep these steps matching the repo. The dashboard works but is left off the diagram
+# on purpose (DECISIONS #46). Keep claims to what the live demo or repo shows.
 visual:
   type: diagram
   steps:

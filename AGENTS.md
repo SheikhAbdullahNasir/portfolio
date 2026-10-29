@@ -21,7 +21,7 @@ The personal portfolio of Abdullah Bin Nasir, a software developer in Karachi bu
 
 ## Rules
 1. **Never invent facts.** No made-up features, numbers, dates, employers, links, clients, or results. If content is missing, render the placeholder from `docs/CONTENT.md` and list it in `docs/PROJECT_STATE.md`.
-2. **No office or employer-specific work** in any file. Only the general career story in `docs/CONTENT.md`.
+2. **No office or employer-specific work** in any file. Only the general career story in `docs/CONTENT.md`. One exception: the résumé PDF (`public/Abdullah_Bin_Nasir_Resume.pdf`) is Abdullah's own file, used exactly as provided, and may include employer details and contact information. The exception covers that file only; do not copy its employer details anywhere else.
 3. **No em dashes** in user-facing copy.
 4. **Everything is a starting direction.** Colors, fonts, layout, and copy are expected to change. Keep them easy to change: tokens for design values, content files for copy.
 5. **Accessibility is required:** semantic HTML, keyboard access for every control, visible focus, `prefers-reduced-motion` respected by every animation, text contrast at least 4.5:1, touch targets at least 44px, real text for screen readers (decorative canvases are `aria-hidden` or labeled).

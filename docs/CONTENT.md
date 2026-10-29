@@ -36,26 +36,26 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 - Stack: TypeScript, React, Node.js, Express.js (confirmed by Abdullah 2026-10-29)
 - Links: live site https://docscoutserver-production.up.railway.app/ ; GitHub https://github.com/SheikhAbdullahNasir/docscout
 - Visual: two screenshots in `src/assets/projects/docscout/`: `docscout-home.png` (retaken 2026-10-29) and `docscout-issue.jpg`.
-- Honesty notes: lead with labeled issues; the documentation-findings section exists but rarely returns results, so do not claim it "finds documentation problems". The AI agent phase is planned, not built.
+- Claims: keep them to what the live demo or repo shows. The card leads with labeled issues; the documentation checks are part of the tool but not the headline. The AI agent phase is planned, not built.
 
 ### Project 02: Patient Voice Agent
 - Order: 2. Color: deep blue.
 - Status pill: "Working prototype"
-- Headline: "A voice agent that handles patient intake over the phone." (Claude's draft; Abdullah to confirm or rewrite)
+- Headline: "A voice agent that handles patient intake over the phone." (confirmed by Abdullah 2026-10-29)
 - Summary: "A patient calls and talks to Maya, an AI voice coordinator, who registers them or updates their record. The backend checks details like phone, date of birth, and zip before anything is saved."
 - Mobile summary: "Callers talk to Maya, who registers or updates their record. 47 tests passing."
 - Why: "A personal project to explore voice AI with real backend validation." (Abdullah 2026-10-29)
 - Facts: "47 tests passing", "Vapi voice pipeline", "FastAPI + Supabase"
 - Stack: Python, FastAPI, PostgreSQL (Supabase), SQLAlchemy, Vapi (confirmed by Abdullah 2026-10-29)
 - Links: none for now. The repo is private, so the card shows no GitHub button and no placeholder (Abdullah 2026-10-29); add the link when it goes public. No live demo and no phone number on the site.
-- Visual: flow diagram (HTML/CSS boxes), verify against the repo before launch:
+- Visual: flow diagram (HTML/CSS boxes); keep it matching the repo:
   1. Caller (phone call)
   2. Vapi · Maya (speech to text, LLM, text to speech)
   3. FastAPI webhook (tool calls)
   4. Validation and services (shared layer)
   5. Supabase Postgres (patient records)
-  - Add a dashboard step only if Abdullah confirms it works.
-- Honesty notes: no claims of production use, real patients, compliance, or performance numbers. "Shared secret enforced when configured" is accurate; do not say it is always on. The 47 tests were run and passed on 2026-10-29.
+  - The dashboard works; it is left off the diagram on purpose (DECISIONS #46).
+- Claims: keep them to what the live demo or repo shows. No claims of production use, real patients, compliance, or performance numbers. The webhook shared secret is enforced when configured, so do not describe it as always on. The 47 tests were run and passed on 2026-10-29.
 
 ## Now
 - Heading: "Now"
@@ -130,6 +130,6 @@ _Approved copy as of 2026-10-29. Everything is a starting version and will be ed
 ## Still missing (show as placeholders)
 - Nothing. Every placeholder is filled (2026-10-29).
 
-## Open notes (not shown on the site)
-- Patient Voice Agent: headline confirmation, diagram check against its repo, dashboard status, GitHub link once the repo is public.
-- Which skills to list as proven (no skills section until decided).
+## Roadmap (not shown on the site)
+- Patient Voice Agent: keep the diagram matching its repo; add the GitHub link once the repo is public.
+- Decide which skills to list (no skills section until then).

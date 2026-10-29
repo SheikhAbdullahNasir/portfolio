@@ -7,4 +7,4 @@ These files are references, not production code. Rewrite cleanly when building.
 - `assets/docscout-issue.jpg`: real DocScout screenshot (a labeled issue card), cropped, no private text. OK to use.
 - The DocScout home page screenshot was retaken on 2026-10-29 and lives only in `src/assets/projects/docscout/docscout-home.png`. The old copy with the accidental text selection was deleted.
 
-The full set of prototypes (all directions, palette, navbar options, stacking cards, full page, round 5 interactions) lives on a private Claude Design canvas named "Portfolio V2 Directions" in Abdullah's Claude account. Ask him for screenshots if a detail is unclear.
+The full prototypes are not in this repo.
