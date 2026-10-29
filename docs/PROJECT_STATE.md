@@ -79,6 +79,15 @@ Checked in the built site from `dist/` in the in-app browser (Chromium). Another
 - Reduced motion: confirmed through the CSSOM that the spin, sticker tilt, book opening, and line draw live only inside `prefers-reduced-motion: no-preference`, and tile movement is off under `reduce`. The setting itself cannot be emulated here.
 - Not checked: real phones and laptops, screen readers (structure only), the line mid-draw (the hidden pane does not advance scroll timelines, so only the end state was read), the magnetic pull feel, the no-JavaScript view, Safari and Firefox.
 
+## Milestone 5 review fixes (Abdullah, 2026-10-29)
+- Beyond the code "+" buttons: on mouse devices (`hover: hover` and `pointer: fine`) the button is invisible (opacity 0, no pointer events) but stays in the tab order, and shows when it has keyboard focus (`:focus-visible`). Always visible on touch screens.
+- Anchor jumps: sections had 96px of top padding above the heading, so menu and anchor links left the heading about 120px below the pill. Sections now have `scroll-margin-top` equal to minus their top padding (`--section-pad` in `index.astro`), so with `html`'s `scroll-padding-top` (88px) the heading lands just below the pill. The section ids, focus handling, and pill label are unchanged.
+- Verified in the built site (in-app browser, same throwaway static server):
+  - Every menu link (Work, Now, About, Beyond the code, Contact) at 1440x900 and 390x844: the heading top lands at 89px, under the pill (which ends at 63 to 70px), focus moves to the section, and the menu closes. Contact also reaches 89px (the page has room). Real clicks with smooth scroll checked for About (1440) and Beyond the code (390); the pill label reads the section name after the jump.
+  - 1440: cricket "+" opacity 0 until a real Tab press reaches it, then opacity 1 with the focus ring; Gaming's stays hidden. 390: "+" visible (opacity 1).
+  - `npx astro check` 0 errors; build passes.
+- Not checked: the hero buttons and pill monogram were not clicked separately (they use the same anchors and rule), real phones.
+
 ## Verified (milestone 4)
 Checked in the built site served from `dist/` in the in-app browser (Chromium). Another session's Astro dev and preview servers were holding the folder, so a throwaway static server in the scratchpad was used.
 - `npx astro check`: 0 errors, 0 warnings, 0 hints (23 files). `npm run build` passes. No console errors. No em dashes in `src/`.
@@ -153,6 +162,7 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Patient Voice Agent flow diagram check against the repo, and dashboard status (comment in the file).
 - Résumé PDF (visible: set `href` in `src/data/site.ts` once `public/Abdullah-Bin-Nasir-Resume.pdf` exists).
 - Skills to list, if any (no skills section until decided).
+- Beyond the code copy needs edits later (Abdullah to provide).
 
 ## Open design questions (do not block the build)
 - Final display font (Bricolage Grotesque is provisional).

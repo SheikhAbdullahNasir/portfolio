@@ -116,6 +116,15 @@ html:not(.js) .beyond-toggle {
   display: none;
 }
 
+/* Mouse: hover already opens the card, so the button only appears for keyboard focus.
+   It stays in the tab order; touch screens always show it. */
+@media (hover: hover) and (pointer: fine) {
+  .beyond-toggle:not(:focus-visible) {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 .beyond-toggle svg {
   transition: transform 0.25s ease;
 }

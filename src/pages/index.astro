@@ -35,10 +35,14 @@ import { navSections } from '../data/nav';
 
 <style>
   .section {
+    --section-pad: 96px;
     max-width: var(--content-max);
     margin-inline: auto;
-    padding: 96px var(--gutter);
+    padding: var(--section-pad) var(--gutter);
     border-top: 1px solid var(--line);
+    /* Anchor jumps skip the top padding, so the heading lands just below the pill
+       (html's scroll-padding-top keeps it clear of the pill). */
+    scroll-margin-top: calc(-1 * var(--section-pad));
   }
 
   /* Mobile: the stack already leaves room for the last card to settle. */
