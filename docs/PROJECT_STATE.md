@@ -3,7 +3,7 @@
 _Last updated 2026-10-29 (milestone 5, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 5 (Now, About, Beyond the code, Contact, footer) is built and checked locally, committed on `main` but **not pushed**. Waiting for Abdullah's review. Next after approval: push, then milestone 6 (interactions).
+Milestone 5 (Now, About, Beyond the code, Contact, footer) is built, checked locally, and pushed (commit `2ba73f1`; Remix Icon decision confirmed in `3dfaea1`). Waiting for Abdullah's review on the Vercel preview. Next after approval: milestone 6 (interactions).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -51,7 +51,7 @@ Milestone 5 (Now, About, Beyond the code, Contact, footer) is built and checked 
   - Pill counter: cards carry `data-nav-project="01"`. `NavPill` now keeps the set of cards in the band and shows the highest number, because stacked cards overlap (the old "last one to enter" logic would stick on "02" when scrolling back up).
   - New tokens in `tokens.css`: `--stack-top`, `--stack-peek`, `--stack-gap`, `--stack-bottom`, `--stack-dwell`, `--stack-max-height`, `--stack-scale`, `--stack-dim`.
   - Shipped JavaScript is now about 3 KB raw, 1.3 KB gzipped (all inline).
-- **Milestone 5 Now, About, Beyond the code, Contact** (committed, not pushed; waiting for review):
+- **Milestone 5 Now, About, Beyond the code, Contact** (commit `2ba73f1`, pushed; waiting for review):
   - `src/components/Icon.astro`: inline SVG icons from Remix Icon (`@iconify-json/ri`, new dev dependency, DECISIONS #25), read at build time. Decorative unless given a `label`.
   - `src/components/NowCards.astro`: "Last updated October 2026" line, three cards (Building, Learning, Exploring) with an accent icon each (hammer, open book, compass; `icon` field in `src/data/now.ts`). One column on mobile, three from 768px.
   - `src/components/About.astro`: timeline (three steps, the last one in the accent) beside the approved paragraph on desktop, stacked on mobile. The timeline line draws in on scroll with a CSS view timeline, only under `prefers-reduced-motion: no-preference`; otherwise it is simply drawn. No photo and no personal touch (still open).
@@ -162,8 +162,8 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah reviews milestone 5 locally (`npm run dev`) or after a push. To judge: the Now icons, the About timeline layout, each Beyond card's drawing and colors (pitch, controller, pass, book), the hover and tap reveals, the contact sizes and tile layout (four across plus a full-width résumé tile), and the footer.
-2. Push milestone 5 once approved, then milestone 6 (interactions).
+1. Abdullah reviews milestone 5 on the Vercel preview on his phone and laptop. To judge: the Now icons, the About timeline layout, each Beyond card's drawing and colors (pitch, controller, pass, book), the hover and tap reveals, the contact sizes and tile layout (four across plus a full-width résumé tile), and the footer.
+2. Milestone 6 (interactions) once milestone 5 is approved.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).
