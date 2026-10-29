@@ -122,28 +122,38 @@ const { steps, label } = Astro.props;
     }
   }
 
+  /* Desktop: the steps share the box's height, so the diagram fills the visual
+     area the way the screenshots do. */
   @media (min-width: 1024px) {
     .flow {
-      --flow-link: 22px;
-      padding: 32px 15%;
+      --flow-link: clamp(20px, 4svh, 36px);
+      padding: clamp(24px, 4svh, 40px) 8%;
     }
 
     .flow__step {
-      padding: 12px 18px;
+      flex: 1 1 0;
+      max-height: 116px;
+      gap: 20px;
+      padding: 12px 28px;
+      border-radius: 18px;
+    }
+
+    .flow__number {
+      font-size: 0.9375rem;
     }
 
     .flow__text {
       flex-direction: column;
       align-items: flex-start;
-      gap: 2px;
+      gap: 4px;
     }
 
     .flow__title {
-      font-size: 1rem;
+      font-size: 1.25rem;
     }
 
     .flow__detail {
-      font-size: 0.8125rem;
+      font-size: 0.9375rem;
     }
   }
 </style>

@@ -1,9 +1,9 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 4 selected work, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (milestone 4 review tuning, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 4 (selected work) is done and pushed (commit `85e7956`). Next: Abdullah checks it on the Vercel preview on his phone and laptop, then milestone 5 (Now, About, Beyond the code, Contact).
+Milestone 4 (selected work) is done and pushed, including Abdullah's review tuning. Next: milestone 5 (Now, About, Beyond the code, Contact).
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -40,14 +40,14 @@ Milestone 4 (selected work) is done and pushed (commit `85e7956`). Next: Abdulla
   - Shipped JavaScript: about 2 KB raw, under 1 KB gzipped (inline; nav label and menu).
 - **Milestone 4 selected work** (commit `85e7956`, pushed):
   - `src/components/ProjectStack.astro`: one sticky card per published project from `getProjects()`, inside `#work`. Card i sticks at `--stack-top` + i x `--stack-peek` (desktop 104px, 124px, ...; mobile 80px, 92px, ...), so the edges of covered cards peek out. Native scroll only.
-  - Covered card: scales to 0.94 (from the top center) and darkens with a black overlay to 45% (`--stack-scale`, `--stack-dim`). Done with a CSS scroll-driven animation: a 1px marker sits at each card's in-flow position, and card i animates on marker i+1's view timeline, from the moment the next card enters the screen until it reaches its sticky top (DECISIONS #24). Browsers without scroll-driven animations (Firefox today) get a small rAF-throttled scroll script that sets `--covered` instead. The last card is never animated.
-  - Scroll room after the last card (`--stack-dwell`, 30svh) so it settles at its sticky top before the stack scrolls away.
+  - Covered card: scales to 0.94 (from the top center) and darkens with a black overlay to 40% (`--stack-scale`, `--stack-dim`). Done with a CSS scroll-driven animation: a 1px marker sits at each card's in-flow position, and card i animates on marker i+1's view timeline, from the moment the next card enters the screen until it reaches its sticky top (DECISIONS #24). Browsers without scroll-driven animations (Firefox today) get a small rAF-throttled scroll script that sets `--covered` instead. The last card is never animated.
+  - Scroll room after the last card (`--stack-dwell`: 30svh on desktop, 8svh on mobile) so it settles at its sticky top before the stack scrolls away. On mobile the work section's bottom padding is 24px instead of 96px, so the gap before Now stays small.
   - Reduced motion: scale and dim (CSS path and fallback styles) only exist inside `prefers-reduced-motion: no-preference`; the cards still stack.
   - Keyboard: tabbing to a link in a covered card scrolls back to where that card has just stuck, so the focused link is never hidden under the next card.
   - All cards share one height: `100svh` minus the sticky top, the peeks, and `--stack-bottom`, capped at 760px on desktop, so the lowest card always fits the screen.
   - `src/components/ProjectCard.astro`: number and title (`h3`), status pill, headline, summary, why, fact chips, stack, links, visual. Desktop: two columns (text, visual). Mobile: visual on top taking whatever height is left, short summary, chips, buttons; why and stack hidden. Phones under 720px tall also hide the chips; laptops under 720px tall get tighter text. Live link opens in a new tab with a hidden "(opens in a new tab)". Missing why, stack, and GitHub show their placeholders.
   - DocScout visual: the two real screenshots layered (home page, issue card over its lower right corner), WebP through Astro's `<Image>` with `srcset` (480/870 and 320/534), lazy loaded.
-  - `src/components/FlowDiagram.astro`: the Patient Voice Agent flow as an `<ol>` of five numbered HTML/CSS boxes with CSS arrows, on a dotted panel. Steps come from the project file. On short phones only the titles show.
+  - `src/components/FlowDiagram.astro`: the Patient Voice Agent flow as an `<ol>` of five numbered HTML/CSS boxes with CSS arrows, on a dotted panel. Steps come from the project file. On desktop the steps share the box's height (flex, up to 116px each) with larger type, so the diagram fills the visual area like the screenshots. On short phones only the titles show.
   - Pill counter: cards carry `data-nav-project="01"`. `NavPill` now keeps the set of cards in the band and shows the highest number, because stacked cards overlap (the old "last one to enter" logic would stick on "02" when scrolling back up).
   - New tokens in `tokens.css`: `--stack-top`, `--stack-peek`, `--stack-gap`, `--stack-bottom`, `--stack-dwell`, `--stack-max-height`, `--stack-scale`, `--stack-dim`.
   - Shipped JavaScript is now about 3 KB raw, 1.3 KB gzipped (all inline).
@@ -63,6 +63,12 @@ Checked in the built site served from `dist/` in the in-app browser (Chromium). 
 - Keyboard: with card 2 covering card 1, a real Tab press moved focus to DocScout's "Visit live site"; the page scrolled back so the link is uncovered (hit test lands on the link) and the focus ring shows.
 - Reduced motion: confirmed through the CSSOM that the animation rules live only inside `@media (prefers-reduced-motion: no-preference)`. The in-app browser cannot emulate the setting, so the reduced-motion page was not watched directly.
 - Not checked: the scroll-script fallback (needs Firefox), real phones (mobile toolbars change `svh`), screen readers (only structure inspected), Lighthouse.
+
+## Verified (milestone 4 review tuning)
+Abdullah's review (2026-10-29): fuller flow diagram on desktop, dim 45% to 40%, less space after the last card on mobile. Checked the same way (built `dist/` in the in-app browser).
+- `npx astro check` 0 errors; build passes.
+- 1440x900: flow steps 91px each (were 69px), 511px wide, spanning 600px of the 672px visual area (89%); no overflow in steps or card. Covered card ends at scale 0.94 and dim 0.40. No horizontal scroll.
+- 390x844: gap from the last card's bottom to the Now heading is 189px (was about 445px). The last card still reaches its sticky top (92px) and holds there for about 67px of scroll before leaving. No horizontal scroll. Card layout unchanged from the milestone 4 check.
 
 ## Verified (milestone 3)
 Checked in the built site (`npm run preview`; another session's dev server was holding the folder) in the in-app browser.
@@ -119,7 +125,7 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Abdullah reviews milestone 4 on the Vercel preview on his phone and laptop. To judge: the stacking feel, the 0.94 scale and 45% dim, card height on his phone, the screenshot layering, the flow diagram look.
+1. Abdullah rechecks milestone 4 on the Vercel preview on his phone and laptop after the tuning. To judge: the stacking feel, the 0.94 scale and 40% dim, card height on his phone, the screenshot layering, the flow diagram look.
 2. Milestone 5: Now, About, Beyond the code, Contact.
 
 ## Checks not yet possible

@@ -59,10 +59,10 @@
   --stack-peek: 12px; /* each later card sticks this much lower, so edges peek out */
   --stack-gap: 24px; /* space between cards before they stack */
   --stack-bottom: 12px; /* space kept below the lowest card */
-  --stack-dwell: 30svh; /* scroll room after the last card settles */
+  --stack-dwell: 8svh; /* scroll room after the last card settles */
   --stack-max-height: 760px;
   --stack-scale: 0.94; /* covered card scales to this */
-  --stack-dim: 0.45; /* covered card darkens to this overlay opacity */
+  --stack-dim: 0.4; /* covered card darkens to this overlay opacity */
 
   /* Focus */
   --focus-ring: 2px solid var(--accent);
@@ -75,6 +75,7 @@
     --stack-top: 104px;
     --stack-peek: 20px;
     --stack-gap: 40px;
+    --stack-dwell: 30svh;
     --stack-bottom: 24px;
   }
 }

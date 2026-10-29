@@ -12,7 +12,7 @@ import { navSections } from '../data/nav';
     navSections.map((section) => (
       <section
         id={section.id}
-        class="section"
+        class:list={['section', { 'section--work': section.id === 'work' }]}
         aria-labelledby={`${section.id}-heading`}
         tabindex="-1"
       >
@@ -31,6 +31,13 @@ import { navSections } from '../data/nav';
     margin-inline: auto;
     padding: 96px var(--gutter);
     border-top: 1px solid var(--line);
+  }
+
+  /* Mobile: the stack already leaves room for the last card to settle. */
+  @media (max-width: 1023px) {
+    .section--work {
+      padding-bottom: 24px;
+    }
   }
 
   /* Sections take focus when reached from the menu; the ring would outline the whole section. */
