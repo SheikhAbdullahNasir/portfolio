@@ -11,7 +11,7 @@ export const features = {
 /** Melt tuning (see docs/reference/melt-test.html to try values). */
 export const meltSettings = {
   /** Blur strength at 200px type; scales with the font size. */
-  melt: 7,
+  melt: 9,
   /** How far letters lean toward the cursor (0 to 1). */
   pull: 0.06,
 } as const;
