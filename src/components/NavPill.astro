@@ -1,0 +1,241 @@
+---
+// Smart pill nav: monogram (back to top), current section label, project counter
+// in Selected work, Résumé link (desktop), and the Menu button that opens MenuOverlay.
+import Placeholder from './Placeholder.astro';
+import { site, resume } from '../data/site';
+import { topLabel, navSections } from '../data/nav';
+import { getProjects } from '../lib/projects';
+
+const projectCount = (await getProjects()).length;
+const sectionLabels = JSON.stringify(
+  Object.fromEntries([['top', topLabel], ...navSections.map((s) => [s.id, s.label])]),
+);
+---
+
+<nav
+  class="pill"
+  aria-label="Main"
+  data-nav-pill
+  data-section-labels={sectionLabels}
+  data-project-total={projectCount}
+>
+  <a class="pill__monogram" href="#top" aria-label="Back to top">
+    <span aria-hidden="true">{site.monogram}</span>
+  </a>
+
+  <p class="pill__label">
+    <span class="pill__section" data-nav-label>{topLabel}</span>
+    <span class="pill__counter" data-nav-counter hidden></span>
+  </p>
+
+  <span class="pill__divider" aria-hidden="true"></span>
+
+  <span class="pill__resume">
+    {
+      resume.href ? (
+        <a href={resume.href} target="_blank" rel="noopener">
+          {resume.pillLabel}
+        </a>
+      ) : (
+        <Placeholder name="resume" />
+      )
+    }
+  </span>
+
+  <button
+    class="pill__menu"
+    type="button"
+    aria-expanded="false"
+    aria-controls="site-menu"
+    data-menu-open
+  >
+    Menu
+  </button>
+</nav>
+
+<style>
+  .pill {
+    position: fixed;
+    z-index: 50;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: rgba(28, 28, 27, 0.82);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .pill__monogram {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--font-display);
+    font-weight: var(--weight-extrabold);
+    font-size: 1.25rem;
+    text-decoration: none;
+  }
+
+  .pill__label {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-weight: var(--weight-medium);
+    font-size: 0.9375rem;
+    white-space: nowrap;
+  }
+
+  .pill__section {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pill__counter {
+    flex: none;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  /* Divider and Résumé are desktop only. */
+  .pill__divider,
+  .pill__resume {
+    display: none;
+  }
+
+  .pill__resume a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    padding-inline: 8px;
+    color: var(--accent);
+    font-weight: var(--weight-medium);
+    font-size: 0.9375rem;
+    text-decoration: none;
+  }
+
+  .pill__resume a:hover {
+    text-decoration: underline;
+  }
+
+  .pill__menu {
+    flex: none;
+    display: none;
+    min-height: var(--touch-target);
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--bg);
+    font: inherit;
+    font-weight: var(--weight-semibold);
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+
+  /* The menu needs JavaScript; without it the button is hidden and the page still scrolls. */
+  :global(.js) .pill__menu {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .pill {
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      max-width: calc(100vw - 24px);
+    }
+
+    /* Fixed width so the centered pill does not jump as the label changes. */
+    .pill__label {
+      flex: none;
+      width: 13rem;
+    }
+
+    .pill__divider {
+      display: block;
+      width: 1px;
+      height: 24px;
+      background: var(--line);
+    }
+
+    .pill__resume {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+</style>
+
+<script>
+  // Updates the label to the section in view, using IntersectionObserver on a thin
+  // band 40% down the viewport. Project cards (milestone 4) opt in to the counter
+  // with a data-nav-project="01" attribute.
+  const pill = document.querySelector<HTMLElement>('[data-nav-pill]');
+  const label = pill?.querySelector<HTMLElement>('[data-nav-label]');
+  const counter = pill?.querySelector<HTMLElement>('[data-nav-counter]');
+
+  if (pill && label && counter && 'IntersectionObserver' in window) {
+    const labels: Record<string, string> = JSON.parse(pill.dataset.sectionLabels ?? '{}');
+    const total = String(pill.dataset.projectTotal ?? '0').padStart(2, '0');
+    let currentSection = 'top';
+    let currentProject: string | null = null;
+    // The last section may be too short to reach the band, so the page end counts as it.
+    const lastId = Object.keys(labels).at(-1) ?? 'top';
+    let atPageEnd = false;
+
+    const render = () => {
+      const section = atPageEnd ? lastId : currentSection;
+      label.textContent = labels[section] ?? labels.top ?? '';
+      const showCounter = section === 'work' && currentProject !== null;
+      counter.hidden = !showCounter;
+      counter.textContent = showCounter ? `${currentProject} / ${total}` : '';
+    };
+
+    const band = { rootMargin: '-40% 0px -59% 0px' };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) currentSection = entry.target.id;
+      }
+      render();
+    }, band);
+
+    const projectObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          currentProject = (entry.target as HTMLElement).dataset.navProject ?? null;
+        }
+      }
+      render();
+    }, band);
+
+    const footer = document.querySelector('.site-footer');
+    if (footer) {
+      new IntersectionObserver(([entry]) => {
+        atPageEnd = entry?.isIntersecting ?? false;
+        render();
+      }).observe(footer);
+    }
+
+    for (const id of Object.keys(labels)) {
+      const section = document.getElementById(id);
+      if (section) sectionObserver.observe(section);
+    }
+    document
+      .querySelectorAll<HTMLElement>('[data-nav-project]')
+      .forEach((card) => projectObserver.observe(card));
+  }
+</script>

@@ -1,18 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { site } from '../data/site';
+import Hero from '../components/Hero.astro';
 import { navSections } from '../data/nav';
 ---
 
 <BaseLayout>
-  <!-- Hero: milestone 3 (text) and 6 (globe, glow, melt). -->
-  <section id="top" class="section section--hero" aria-label="Introduction">
-    <h1 class="visually-hidden">{site.name}</h1>
-  </section>
+  <Hero />
 
   {
     navSections.map((section) => (
-      <section id={section.id} class="section" aria-labelledby={`${section.id}-heading`}>
+      <section
+        id={section.id}
+        class="section"
+        aria-labelledby={`${section.id}-heading`}
+        tabindex="-1"
+      >
         <h2 id={`${section.id}-heading`} class="section__heading">
           {section.label}
         </h2>
@@ -29,9 +31,9 @@ import { navSections } from '../data/nav';
     border-top: 1px solid var(--line);
   }
 
-  .section--hero {
-    min-height: 100svh;
-    border-top: 0;
+  /* Sections take focus when reached from the menu; the ring would outline the whole section. */
+  .section:focus {
+    outline: none;
   }
 
   .section__heading {

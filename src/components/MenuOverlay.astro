@@ -1,0 +1,254 @@
+---
+// Full-screen menu, opened by the Menu button in NavPill. A modal <dialog>:
+// Esc closes it, focus stays inside while open, and the page behind does not scroll.
+import Placeholder from './Placeholder.astro';
+import { resume } from '../data/site';
+import { navSections } from '../data/nav';
+import { contact } from '../data/contact';
+---
+
+<dialog id="site-menu" class="menu" aria-label="Menu" data-menu>
+  <div class="menu__inner">
+    <div class="menu__top">
+      <p class="menu__title" aria-hidden="true">Menu</p>
+      <button class="menu__close" type="button" data-menu-close>
+        Close<span class="visually-hidden"> menu</span>
+      </button>
+    </div>
+
+    <nav aria-label="Sections">
+      <ol class="menu__links">
+        {
+          navSections.map((section) => (
+            <li>
+              <a class="menu__link" href={`#${section.id}`} data-menu-link>
+                <span class="menu__number" aria-hidden="true">
+                  {section.number}
+                </span>
+                {section.menuLabel}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="menu__footer">
+      {
+        resume.href ? (
+          <a class="menu__resume" href={resume.href} target="_blank" rel="noopener">
+            {resume.label}
+          </a>
+        ) : (
+          <Placeholder name="resume" />
+        )
+      }
+      <a class="menu__email" href={`mailto:${contact.email}`}>{contact.email}</a>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--surface);
+    color: var(--ink);
+    opacity: 0;
+    transition:
+      opacity 0.2s ease,
+      display 0.2s allow-discrete,
+      overlay 0.2s allow-discrete;
+  }
+
+  .menu[open] {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .menu[open] {
+      opacity: 0;
+    }
+  }
+
+  .menu::backdrop {
+    background: var(--bg);
+  }
+
+  .menu__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    min-height: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: 18px var(--gutter) 40px;
+  }
+
+  .menu__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .menu__title {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .menu__close {
+    min-height: var(--touch-target);
+    padding: 0 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-weight: var(--weight-semibold);
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+
+  .menu__close:hover {
+    border-color: var(--muted);
+  }
+
+  .menu__links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .menu__link {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-block: 8px;
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: clamp(2.25rem, 8vw, 5.5rem);
+    line-height: 1.05;
+    text-decoration: none;
+  }
+
+  .menu__link:hover {
+    color: var(--accent);
+  }
+
+  .menu__number {
+    flex: none;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-weight: var(--weight-regular);
+    font-size: 0.875rem;
+  }
+
+  .menu__footer {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+  }
+
+  .menu__resume {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    padding: 0 22px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+  }
+
+  .menu__email {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+
+  .menu__email:hover {
+    color: var(--ink);
+  }
+
+  /* Keeps the page behind the menu from scrolling. */
+  :global(html.menu-open) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
+  const openButton = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+
+  if (menu && openButton) {
+    const root = document.documentElement;
+    // Set when a section link closes the menu, so focus goes to that section instead.
+    let focusTarget: HTMLElement | null = null;
+
+    const open = () => {
+      root.classList.add('menu-open');
+      menu.showModal();
+      openButton.setAttribute('aria-expanded', 'true');
+    };
+
+    const close = () => {
+      if (menu.open) menu.close();
+    };
+
+    openButton.addEventListener('click', open);
+    menu.querySelector('[data-menu-close]')?.addEventListener('click', close);
+
+    // Fires for every way of closing, including Esc.
+    menu.addEventListener('close', () => {
+      root.classList.remove('menu-open');
+      openButton.setAttribute('aria-expanded', 'false');
+      if (focusTarget) {
+        focusTarget.focus({ preventScroll: true });
+        focusTarget = null;
+      } else {
+        openButton.focus();
+      }
+    });
+
+    // A section link closes the menu, then the browser follows the link as usual.
+    menu.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
+      link.addEventListener('click', () => {
+        const id = link.hash.slice(1);
+        focusTarget = document.getElementById(id);
+        root.classList.remove('menu-open');
+        close();
+      });
+    });
+
+    // Keep Tab and Shift+Tab cycling inside the menu instead of reaching the browser UI.
+    menu.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const focusable = Array.from(
+        menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+  }
+</script>

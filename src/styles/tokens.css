@@ -52,6 +52,7 @@
   --gutter: 20px; /* mobile side padding, 16 to 20px */
   --content-max: 1440px;
   --touch-target: 44px;
+  --nav-offset: 88px; /* space kept clear for the fixed pill nav */
 
   /* Focus */
   --focus-ring: 2px solid var(--accent);

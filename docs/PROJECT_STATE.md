@@ -1,9 +1,9 @@
 # Project State: Portfolio V2
 
-_Last updated 2026-10-29 (milestone 2 content model, Claude Code). Update this file at the end of every working session._
+_Last updated 2026-10-29 (milestone 3 nav and hero, Claude Code). Update this file at the end of every working session._
 
 ## Current objective
-Milestone 2 (content model) is done, committed, and pushed. Next: milestone 3 (nav and hero, static).
+Milestone 3 (nav and hero, static) is built and committed locally, not pushed. Waiting for Abdullah's review before milestone 4.
 
 ## Live preview
 - Vercel is connected to the GitHub repo and deploys every push to `main`: https://portfolio-murex-two-31.vercel.app/
@@ -28,6 +28,24 @@ Milestone 2 (content model) is done, committed, and pushed. Next: milestone 3 (n
   - Placeholders: missing content is left out of the data (optional field, empty list, no link), and the page renders the matching text from `src/data/placeholders.ts` through `src/components/Placeholder.astro` (dashed accent box, mono font). Adding the real content makes the placeholder disappear by itself.
   - Dev-only review page at `/content-preview` (`src/pages/[devPage].astro`): every piece of content and every placeholder in plain form, with project cards in their colors. It only exists under `npm run dev`; the production build does not include it.
   - The home page still shows empty sections. Rendering the content there starts in milestone 3.
+- **Milestone 3 nav and hero** (committed locally, not pushed; waiting for review):
+  - `src/components/NavPill.astro`: fixed pill (centered from 1024px, full width with 12px margins below). "A" monogram links to `#top`, label shows "Abdullah Bin Nasir" in the hero and the section name after that, divider and Résumé on desktop only, accent Menu button. The label uses `IntersectionObserver` on a thin band 40% down the viewport; reaching the page end (footer in view) counts as the last section, so Contact still shows when it is too short to reach the band. Label width is fixed on desktop so the centered pill does not jump.
+  - Project counter ("01 / 02") is wired but has nothing to count yet: milestone 4 cards opt in with `data-nav-project="01"` inside `#work`. The total comes from `getProjects()`.
+  - `src/components/MenuOverlay.astro`: full-screen modal `<dialog>` with numbered section links, Résumé, and email. Esc closes (native), Tab and Shift+Tab wrap inside the menu, focus returns to the Menu button on close, `aria-expanded` stays in sync, page scroll is locked while open. Choosing a section link closes the menu and moves focus to that section (sections have `tabindex="-1"`), so the next Tab continues from there; see DECISIONS #23.
+  - The Menu button only shows when JavaScript runs (an inline script adds a `js` class to `<html>`). Without JavaScript the page still reads and scrolls.
+  - Résumé has no PDF yet, so the pill (desktop) and the menu show the "[Resume PDF not provided yet]" placeholder. Adding `href` in `src/data/site.ts` turns both into links.
+  - `src/components/Hero.astro`: label, huge name, one-liner, status line with accent dot, See work and Get in touch buttons, all from `src/data/hero.ts`. The `<h1>` reads "Abdullah Bin Nasir" to screen readers (the rest of the name is visually hidden). An empty, `aria-hidden` object slot (`data-hero-object`) holds the globe's place: right side on desktop, behind the text and off the right edge on mobile. No globe, glow, melt, or globe caption yet (milestone 6).
+  - New token `--nav-offset` (88px); `html` has `scroll-padding-top` so anchor links land below the pill, and `scrollbar-gutter: stable` so locking scroll does not shift the layout.
+  - Shipped JavaScript: about 2 KB raw, under 1 KB gzipped (inline; nav label and menu).
+
+## Verified (milestone 3)
+Checked in the built site (`npm run preview`; another session's dev server was holding the folder) in the in-app browser.
+- `npx astro check`: 0 errors, 0 warnings, 0 hints (20 files). `npm run build` passes.
+- 1440px: pill centered, 646px wide, width stays the same for every label. Label follows the scroll: Abdullah Bin Nasir, Now, About, Contact at the page end, back to Abdullah Bin Nasir at the top. No horizontal scroll.
+- 390px: pill full width (12px margins), monogram and Menu button 44px, Résumé hidden in the pill, hero buttons 52px, menu links 54px, no horizontal scroll in the page or the menu. Label updates on scroll.
+- Keyboard only: Tab order is skip link, monogram, Menu, See work, Get in touch. Enter on Menu opens it with focus on Close; Tab cycles Close, five links, email, back to Close; Shift+Tab wraps the other way. Esc closes, focus returns to Menu with a visible ring, `aria-expanded` back to false, scroll unlocked. Enter on Contact closes the menu, scrolls to `#contact`, and focuses it. The Close button by mouse also returns focus to Menu.
+- No console errors. No em dashes in `src/`.
+- Not checked: the counter (no project cards yet), real phones, screen readers (only the accessibility tree was inspected), and the menu open fade under reduced motion (the global reduced-motion rule should cut it to near zero).
 
 ## Verified (milestone 2)
 - `npx astro check`: 0 errors, 0 warnings, 0 hints (17 files).
@@ -49,7 +67,7 @@ Milestone 2 (content model) is done, committed, and pushed. Next: milestone 3 (n
 - Screenshot alt text was written from what the screenshots show; Abdullah may want to reword it.
 
 ## Not started
-- Milestones 3 to 8.
+- Milestones 4 to 8.
 
 ## Placeholders to fill (from Abdullah)
 Rendered on the site where marked "visible". The rest are notes in the project files.
@@ -70,7 +88,8 @@ Rendered on the site where marked "visible". The rest are notes in the project f
 - Where exactly the melt effect lives (hero name is the candidate).
 
 ## Next useful action
-1. Start milestone 3: smart pill nav, menu overlay with full keyboard support, hero text and buttons.
+1. Abdullah reviews milestone 3 (pill, menu, hero) on desktop and phone; then push to `main` for a Vercel preview.
+2. Milestone 4: project cards, stacking, DocScout screenshots, Patient Voice Agent flow diagram. Add `data-nav-project` to each card to light up the pill counter.
 
 ## Checks not yet possible
 - Real-device testing (needs Abdullah's phone and laptop).

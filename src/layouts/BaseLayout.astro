@@ -5,6 +5,8 @@ import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import '../styles/tokens.css';
 import '../styles/global.css';
+import NavPill from '../components/NavPill.astro';
+import MenuOverlay from '../components/MenuOverlay.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -26,12 +28,15 @@ const { title = site.name, description = site.description } = Astro.props;
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <!-- Lets CSS show JavaScript-only controls (the Menu button) only when scripts run. -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
-      <!-- Smart pill nav and menu overlay: milestone 3. -->
+      <NavPill />
+      <MenuOverlay />
       <slot name="header" />
     </header>
 

@@ -1,0 +1,160 @@
+---
+// Hero text and buttons. The globe, cursor glow, and melt come in milestone 6;
+// the empty object slot keeps their place so the text never has to move.
+import { site } from '../data/site';
+import { hero } from '../data/hero';
+
+// Screen readers hear the full name; the page shows only the first name.
+const nameRest = site.name.startsWith(hero.name) ? site.name.slice(hero.name.length) : '';
+---
+
+<section id="top" class="hero" aria-labelledby="hero-name" tabindex="-1">
+  <div class="hero__object" aria-hidden="true" data-hero-object></div>
+
+  <div class="hero__text">
+    <p class="hero__label">{hero.label}</p>
+    <h1 id="hero-name" class="hero__name">
+      {hero.name}{nameRest && <span class="visually-hidden">{nameRest}</span>}
+    </h1>
+    <p class="hero__one-liner">{hero.oneLiner}</p>
+    <p class="hero__status">
+      <span class="hero__dot" aria-hidden="true"></span>
+      {hero.status}
+    </p>
+    <div class="hero__actions">
+      <a class="button button--primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
+      <a class="button button--secondary" href={hero.secondaryCta.href}>
+        {hero.secondaryCta.label}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-height: 100svh;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: calc(var(--nav-offset) + 24px) var(--gutter) 64px;
+    overflow: hidden;
+  }
+
+  .hero:focus {
+    outline: none;
+  }
+
+  /* Globe slot (milestone 6). Mobile: behind the text, off the right edge. Desktop: right side. */
+  .hero__object {
+    position: absolute;
+    top: 12%;
+    right: -30%;
+    width: 90vw;
+    aspect-ratio: 1;
+    pointer-events: none;
+  }
+
+  .hero__text {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .hero__label {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .hero__name {
+    font-weight: var(--weight-extrabold);
+    font-size: clamp(4.5rem, 21vw, 15rem);
+    line-height: 0.9;
+    letter-spacing: -0.035em;
+  }
+
+  .hero__one-liner {
+    max-width: 22ch;
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: clamp(1.5rem, 3.4vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  .hero__status {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    max-width: 48ch;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .hero__dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(143, 179, 255, 0.18);
+    transform: translateY(-2px);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 26px;
+    border-radius: var(--radius-pill);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .button--primary {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .button--primary:hover {
+    background: #ffffff;
+  }
+
+  .button--secondary {
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  .button--secondary:hover {
+    border-color: var(--muted);
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      align-items: center;
+      padding-bottom: 96px;
+    }
+
+    .hero__object {
+      top: 50%;
+      right: var(--gutter);
+      width: min(46vw, 640px);
+      transform: translateY(-50%);
+    }
+  }
+</style>

@@ -8,6 +8,9 @@
 
 html {
   color-scheme: dark;
+  /* Anchor links land below the fixed pill nav; the gutter stops a jump when the menu locks scroll. */
+  scroll-padding-top: var(--nav-offset);
+  scrollbar-gutter: stable;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
